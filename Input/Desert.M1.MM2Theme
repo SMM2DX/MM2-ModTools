@@ -1,0 +1,36 @@
+{
+	"Tileset_Model": "M1_Field_desert",
+	"Tileset_Model_Animation_Type": "Normal",
+	"Lighting": "default",
+	"Enemy_Variant": "Normal",
+	"Background_Model": "M1_DV_desert",
+	"Background_Lighting": "DV_default",
+	"Vertical_Background_Lighting": "DV_default",
+	"Vertical_Background_Anchor_Type": "Top",
+
+	"CustomScroll_Inside": [
+		0.00000,
+		0.20000,
+		0.40000,
+		0.80000
+	],
+	"CustomScroll_Outside": [
+		0.00000,
+		0.00000,
+		0.00000,
+		0.90000
+	],
+	"Editor_Grid": [
+		0.10000,
+		0.15000,
+		0.20000,
+		0.70000
+	],
+	"Shadow_Color": [
+		0.00000,
+		0.00000,
+		0.00000,
+		0.50000
+	],
+	"Shadow_Offset": 0.00800
+}
