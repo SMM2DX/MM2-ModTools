@@ -2,6 +2,11 @@ import oead
 import json
 import os
 
+if not os.path.exists("MM2Theme-Input/"):
+	os.makedirs("MM2Theme-Input/")
+if not os.path.exists("BYML-Output/"):
+	os.makedirs("BYML-Output/")
+
 class MM2Theme():
 	Tileset_Model: str
 	Lighting: str
@@ -366,53 +371,56 @@ class MM2ThemeSet():
 	Night_3W: MM2Theme_3W
 
 	def __init__(self, ThemePrefix):
-		with open("Input/"+ThemePrefix+".M1.MM2Theme", "rt") as file:
+		with open("MM2Theme-Input/"+ThemePrefix+".M1.MM2Theme", "rt") as file:
 			self.Day_M1 = MM2Theme_M1(json.load(file))
 			self.Day_M1.print()
-		with open("Input/"+ThemePrefix+"_Night.M1.MM2Theme", "rt") as file:
+		with open("MM2Theme-Input/"+ThemePrefix+"_D.M1.MM2Theme", "rt") as file:
 			self.Night_M1 = MM2Theme_M1(json.load(file))
 			self.Night_M1.print()
 
-		with open("Input/"+ThemePrefix+".M3.MM2Theme", "rt") as file:
+		with open("MM2Theme-Input/"+ThemePrefix+".M3.MM2Theme", "rt") as file:
 			self.Day_M3 = MM2Theme_M3(json.load(file))
 			self.Day_M3.print()
-		with open("Input/"+ThemePrefix+"_Night.M3.MM2Theme", "rt") as file:
+		with open("MM2Theme-Input/"+ThemePrefix+"_D.M3.MM2Theme", "rt") as file:
 			self.Night_M3 = MM2Theme_M3(json.load(file))
 			self.Night_M3.print()
 
-		with open("Input/"+ThemePrefix+".MW.MM2Theme", "rt") as file:
+		with open("MM2Theme-Input/"+ThemePrefix+".MW.MM2Theme", "rt") as file:
 			self.Day_MW = MM2Theme_MW(json.load(file))
 			self.Day_MW.print()
-		with open("Input/"+ThemePrefix+"_Night.MW.MM2Theme", "rt") as file:
+		with open("MM2Theme-Input/"+ThemePrefix+"_D.MW.MM2Theme", "rt") as file:
 			self.Night_MW = MM2Theme_MW(json.load(file))
 			self.Night_MW.print()
 
-		with open("Input/"+ThemePrefix+".WU.MM2Theme", "rt") as file:
+		with open("MM2Theme-Input/"+ThemePrefix+".WU.MM2Theme", "rt") as file:
 			self.Day_WU = MM2Theme_WU(json.load(file))
 			self.Day_WU.print()
-		with open("Input/"+ThemePrefix+"_Night.WU.MM2Theme", "rt") as file:
+		with open("MM2Theme-Input/"+ThemePrefix+"_D.WU.MM2Theme", "rt") as file:
 			self.Night_WU = MM2Theme_WU(json.load(file))
 			self.Night_WU.print()
 
-		with open("Input/"+ThemePrefix+".3W.MM2Theme", "rt") as file:
+		with open("MM2Theme-Input/"+ThemePrefix+".3W.MM2Theme", "rt") as file:
 			self.Day_3W = MM2Theme_3W(json.load(file))
 			self.Day_3W.print()
-		with open("Input/"+ThemePrefix+"_Night.3W.MM2Theme", "rt") as file:
+		#with open("MM2Theme-Input/"+ThemePrefix+"_D.3W.MM2Theme", "rt") as file:
+		with open("MM2Theme-Input/"+ThemePrefix+".3W.MM2Theme", "rt") as file:
 			self.Night_3W = MM2Theme_3W(json.load(file))
 			self.Night_3W.print()
 		
 
 def main():
-	Plains = MM2ThemeSet("Plains")
-	Underground = Plains
-	Castle = Plains
-	Airship = Plains
-	Water = Plains
-	GhostHouse = Plains
-	Snow = Plains
-	Desert = Plains
-	Atheltic = Plains
-	Woods = Plains
+	Plains = MM2ThemeSet("plain")
+	Underground = MM2ThemeSet("underground")
+	Castle = MM2ThemeSet("castle")
+	Airship = MM2ThemeSet("airship")
+	Water = MM2ThemeSet("water")
+	GhostHouse = MM2ThemeSet("hauntedhouse")
+	Snow = MM2ThemeSet("snow")
+	Desert = MM2ThemeSet("desert")
+	Atheltic = MM2ThemeSet("athletic")
+	Woods = MM2ThemeSet("woods")
+	#Woods = MM2ThemeSet("sewer") #Example custom theme *replacement*
+	Sewer = MM2ThemeSet("sewer") #Example custom theme *addition*
 
 	Scenes_M1= [Plains.Day_M1.as_byml_dict(),		Plains.Night_M1.as_byml_dict(),
 				Underground.Day_M1.as_byml_dict(),	Underground.Night_M1.as_byml_dict(),
@@ -423,7 +431,8 @@ def main():
 				Snow.Day_M1.as_byml_dict(),			Snow.Night_M1.as_byml_dict(),
 				Desert.Day_M1.as_byml_dict(),		Desert.Night_M1.as_byml_dict(),
 				Atheltic.Day_M1.as_byml_dict(),		Atheltic.Night_M1.as_byml_dict(),
-				Woods.Day_M1.as_byml_dict(),		Woods.Night_M1.as_byml_dict()]
+				Woods.Day_M1.as_byml_dict(),		Woods.Night_M1.as_byml_dict(),
+				Sewer.Day_M1.as_byml_dict(),		Sewer.Night_M1.as_byml_dict()]
 	Scenes_M3= [Plains.Day_M3.as_byml_dict(),		Plains.Night_M3.as_byml_dict(),
 				Underground.Day_M3.as_byml_dict(),	Underground.Night_M3.as_byml_dict(),
 				Castle.Day_M3.as_byml_dict(),		Castle.Night_M3.as_byml_dict(),
@@ -433,7 +442,8 @@ def main():
 				Snow.Day_M3.as_byml_dict(),			Snow.Night_M3.as_byml_dict(),
 				Desert.Day_M3.as_byml_dict(),		Desert.Night_M3.as_byml_dict(),
 				Atheltic.Day_M3.as_byml_dict(),		Atheltic.Night_M3.as_byml_dict(),
-				Woods.Day_M3.as_byml_dict(),		Woods.Night_M3.as_byml_dict()]
+				Woods.Day_M3.as_byml_dict(),		Woods.Night_M3.as_byml_dict(),
+				Sewer.Day_M3.as_byml_dict(),		Sewer.Night_M3.as_byml_dict()]
 	Scenes_MW= [Plains.Day_MW.as_byml_dict(),		Plains.Night_MW.as_byml_dict(),
 				Underground.Day_MW.as_byml_dict(),	Underground.Night_MW.as_byml_dict(),
 				Castle.Day_MW.as_byml_dict(),		Castle.Night_MW.as_byml_dict(),
@@ -443,7 +453,8 @@ def main():
 				Snow.Day_MW.as_byml_dict(),			Snow.Night_MW.as_byml_dict(),
 				Desert.Day_MW.as_byml_dict(),		Desert.Night_MW.as_byml_dict(),
 				Atheltic.Day_MW.as_byml_dict(),		Atheltic.Night_MW.as_byml_dict(),
-				Woods.Day_MW.as_byml_dict(),		Woods.Night_MW.as_byml_dict()]
+				Woods.Day_MW.as_byml_dict(),		Woods.Night_MW.as_byml_dict(),
+				Sewer.Day_MW.as_byml_dict(),		Sewer.Night_MW.as_byml_dict()]
 	Scenes_WU= [Plains.Day_WU.as_byml_dict(),		Plains.Night_WU.as_byml_dict(),
 				Underground.Day_WU.as_byml_dict(),	Underground.Night_WU.as_byml_dict(),
 				Castle.Day_WU.as_byml_dict(),		Castle.Night_WU.as_byml_dict(),
@@ -453,7 +464,8 @@ def main():
 				Snow.Day_WU.as_byml_dict(),			Snow.Night_WU.as_byml_dict(),
 				Desert.Day_WU.as_byml_dict(),		Desert.Night_WU.as_byml_dict(),
 				Atheltic.Day_WU.as_byml_dict(),		Atheltic.Night_WU.as_byml_dict(),
-				Woods.Day_WU.as_byml_dict(),		Woods.Night_WU.as_byml_dict()]
+				Woods.Day_WU.as_byml_dict(),		Woods.Night_WU.as_byml_dict(),
+				Sewer.Day_WU.as_byml_dict(),		Sewer.Night_WU.as_byml_dict()]
 	Scenes_3W= [Plains.Day_3W.as_byml_dict(),		Plains.Night_3W.as_byml_dict(),
 				Underground.Day_3W.as_byml_dict(),	Underground.Night_3W.as_byml_dict(),
 				Castle.Day_3W.as_byml_dict(),		Castle.Night_3W.as_byml_dict(),
@@ -463,30 +475,28 @@ def main():
 				Snow.Day_3W.as_byml_dict(),			Snow.Night_3W.as_byml_dict(),
 				Desert.Day_3W.as_byml_dict(),		Desert.Night_3W.as_byml_dict(),
 				Atheltic.Day_3W.as_byml_dict(),		Atheltic.Night_3W.as_byml_dict(),
-				Woods.Day_3W.as_byml_dict(),		Woods.Night_3W.as_byml_dict()]
+				Woods.Day_3W.as_byml_dict(),		Woods.Night_3W.as_byml_dict(),
+				Sewer.Day_3W.as_byml_dict(),		Sewer.Night_3W.as_byml_dict()]
 
-	if not os.path.exists("Output/"):
-		os.makedirs("Output/")
-
-	with open("Output/M1_SceneDB.yaml", "wt") as file:
+	with open("BYML-Output/M1_SceneDB.yaml", "wt") as file:
 		file.write(oead.byml.to_text(Scenes_M1))
-	with open("Output/M1_SceneDB.byml", "wb") as file:
+	with open("BYML-Output/M1_SceneDB.byml", "wb") as file:
 		file.write(oead.byml.to_binary(Scenes_M1, False, 1))
-	with open("Output/M3_SceneDB.yaml", "wt") as file:
+	with open("BYML-Output/M3_SceneDB.yaml", "wt") as file:
 		file.write(oead.byml.to_text(Scenes_M3))
-	with open("Output/M3_SceneDB.byml", "wb") as file:
+	with open("BYML-Output/M3_SceneDB.byml", "wb") as file:
 		file.write(oead.byml.to_binary(Scenes_M3, False, 1))
-	with open("Output/MW_SceneDB.yaml", "wt") as file:
+	with open("BYML-Output/MW_SceneDB.yaml", "wt") as file:
 		file.write(oead.byml.to_text(Scenes_MW))
-	with open("Output/MW_SceneDB.byml", "wb") as file:
+	with open("BYML-Output/MW_SceneDB.byml", "wb") as file:
 		file.write(oead.byml.to_binary(Scenes_MW, False, 1))
-	with open("Output/WU_SceneDB.yaml", "wt") as file:
+	with open("BYML-Output/WU_SceneDB.yaml", "wt") as file:
 		file.write(oead.byml.to_text(Scenes_WU))
-	with open("Output/WU_SceneDB.byml", "wb") as file:
+	with open("BYML-Output/WU_SceneDB.byml", "wb") as file:
 		file.write(oead.byml.to_binary(Scenes_WU, False, 1))
-	with open("Output/3W_SceneDB.yaml", "wt") as file:
+	with open("BYML-Output/3W_SceneDB.yaml", "wt") as file:
 		file.write(oead.byml.to_text(Scenes_3W))
-	with open("Output/3W_SceneDB.byml", "wb") as file:
+	with open("BYML-Output/3W_SceneDB.byml", "wb") as file:
 		file.write(oead.byml.to_binary(Scenes_3W, False, 1))
 
 main()
