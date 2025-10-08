@@ -366,38 +366,38 @@ class MM2ThemeSet():
 	Night_3W: MM2Theme_3W
 
 	def __init__(self, ThemePrefix):
-		with open(ThemePrefix+".M1.MM2Theme", "rt") as file:
+		with open("Input/"+ThemePrefix+".M1.MM2Theme", "rt") as file:
 			self.Day_M1 = MM2Theme_M1(json.load(file))
 			self.Day_M1.print()
-		with open(ThemePrefix+"_Night.M1.MM2Theme", "rt") as file:
+		with open("Input/"+ThemePrefix+"_Night.M1.MM2Theme", "rt") as file:
 			self.Night_M1 = MM2Theme_M1(json.load(file))
 			self.Night_M1.print()
 
-		with open(ThemePrefix+".M3.MM2Theme", "rt") as file:
+		with open("Input/"+ThemePrefix+".M3.MM2Theme", "rt") as file:
 			self.Day_M3 = MM2Theme_M3(json.load(file))
 			self.Day_M3.print()
-		with open(ThemePrefix+"_Night.M3.MM2Theme", "rt") as file:
+		with open("Input/"+ThemePrefix+"_Night.M3.MM2Theme", "rt") as file:
 			self.Night_M3 = MM2Theme_M3(json.load(file))
 			self.Night_M3.print()
 
-		with open(ThemePrefix+".MW.MM2Theme", "rt") as file:
+		with open("Input/"+ThemePrefix+".MW.MM2Theme", "rt") as file:
 			self.Day_MW = MM2Theme_MW(json.load(file))
 			self.Day_MW.print()
-		with open(ThemePrefix+"_Night.MW.MM2Theme", "rt") as file:
+		with open("Input/"+ThemePrefix+"_Night.MW.MM2Theme", "rt") as file:
 			self.Night_MW = MM2Theme_MW(json.load(file))
 			self.Night_MW.print()
 
-		with open(ThemePrefix+".WU.MM2Theme", "rt") as file:
+		with open("Input/"+ThemePrefix+".WU.MM2Theme", "rt") as file:
 			self.Day_WU = MM2Theme_WU(json.load(file))
 			self.Day_WU.print()
-		with open(ThemePrefix+"_Night.WU.MM2Theme", "rt") as file:
+		with open("Input/"+ThemePrefix+"_Night.WU.MM2Theme", "rt") as file:
 			self.Night_WU = MM2Theme_WU(json.load(file))
 			self.Night_WU.print()
 
-		with open(ThemePrefix+".3W.MM2Theme", "rt") as file:
+		with open("Input/"+ThemePrefix+".3W.MM2Theme", "rt") as file:
 			self.Day_3W = MM2Theme_3W(json.load(file))
 			self.Day_3W.print()
-		with open(ThemePrefix+"_Night.3W.MM2Theme", "rt") as file:
+		with open("Input/"+ThemePrefix+"_Night.3W.MM2Theme", "rt") as file:
 			self.Night_3W = MM2Theme_3W(json.load(file))
 			self.Night_3W.print()
 		
