@@ -1,6 +1,7 @@
-BYML-Input/
-BYML-Output/
-MM2Theme-Output/
+**/__pycache__/
+Modules/ThemeCompiler/BYML-Output/
+Modules/ThemeDecompiler/BYML-Input/
+Modules/ThemeDecompiler/MM2Theme-Output/
 .venv/
 .python-version
 Icon.png
