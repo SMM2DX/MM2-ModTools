@@ -2,10 +2,12 @@ import oead
 import json
 import os
 
-if not os.path.exists("BYML-Input/"):
-	os.makedirs("BYML-Input/")
-if not os.path.exists("MM2Theme-Output/"):
-	os.makedirs("MM2Theme-Output/")
+DEBUG_OUTPUT = False
+DIRECTORY = os.path.dirname(__file__)+"/"
+if not os.path.exists(DIRECTORY+"BYML-Input/"):
+	os.makedirs(DIRECTORY+"BYML-Input/")
+if not os.path.exists(DIRECTORY+"MM2Theme-Output/"):
+	os.makedirs(DIRECTORY+"MM2Theme-Output/")
 
 def bymlToJson(byml):
 	byml = dict(byml)
@@ -84,13 +86,15 @@ def bymlToJson(byml):
 	return json
 
 def main():
-	for fileName in os.listdir("BYML-Input/"):
+	for fileName in os.listdir(DIRECTORY+"BYML-Input/"):
 		if not fileName.endswith(".byml"): continue
-		with open("BYML-Input/"+fileName, "rb") as bymlFile:
+		with open(DIRECTORY+"BYML-Input/"+fileName, "rb") as bymlFile:
 			for theme in oead.byml.from_binary(bymlFile.read()):
 				themeJson = bymlToJson(theme)
-				print(themeJson)
-				with open("MM2Theme-Output/"+theme["FieldModel"][9:]+"."+fileName[:2]+".MM2Theme", "wt") as jsonFile:
+				if DEBUG_OUTPUT: print(themeJson)
+				with open(DIRECTORY+"MM2Theme-Output/"+theme["FieldModel"][9:]+"."+fileName[:2]+".MM2Theme", "wt") as jsonFile:
 					json.dump(themeJson, jsonFile)
 
-main()
+if __name__ == "__main__":
+	DEBUG_OUTPUT = True
+	main()

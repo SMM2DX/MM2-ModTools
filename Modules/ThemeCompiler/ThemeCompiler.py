@@ -2,10 +2,12 @@ import oead
 import json
 import os
 
-if not os.path.exists("MM2Theme-Input/"):
-	os.makedirs("MM2Theme-Input/")
-if not os.path.exists("BYML-Output/"):
-	os.makedirs("BYML-Output/")
+DEBUG_OUTPUT = False
+DIRECTORY = os.path.dirname(__file__)+"/"
+if not os.path.exists(DIRECTORY+"MM2Theme-Input/"):
+	os.makedirs(DIRECTORY+"MM2Theme-Input/")
+if not os.path.exists(DIRECTORY+"BYML-Output/"):
+	os.makedirs(DIRECTORY+"BYML-Output/")
 
 class MM2Theme():
 	Tileset_Model: str
@@ -371,41 +373,40 @@ class MM2ThemeSet():
 	Night_3W: MM2Theme_3W
 
 	def __init__(self, ThemePrefix):
-		with open("MM2Theme-Input/"+ThemePrefix+".M1.MM2Theme", "rt") as file:
+		with open(DIRECTORY+"MM2Theme-Input/"+ThemePrefix+".M1.MM2Theme", "rt") as file:
 			self.Day_M1 = MM2Theme_M1(json.load(file))
-			self.Day_M1.print()
-		with open("MM2Theme-Input/"+ThemePrefix+"_D.M1.MM2Theme", "rt") as file:
+			if DEBUG_OUTPUT: self.Day_M1.print()
+		with open(DIRECTORY+"MM2Theme-Input/"+ThemePrefix+"_D.M1.MM2Theme", "rt") as file:
 			self.Night_M1 = MM2Theme_M1(json.load(file))
-			self.Night_M1.print()
+			if DEBUG_OUTPUT: self.Night_M1.print()
 
-		with open("MM2Theme-Input/"+ThemePrefix+".M3.MM2Theme", "rt") as file:
+		with open(DIRECTORY+"MM2Theme-Input/"+ThemePrefix+".M3.MM2Theme", "rt") as file:
 			self.Day_M3 = MM2Theme_M3(json.load(file))
-			self.Day_M3.print()
-		with open("MM2Theme-Input/"+ThemePrefix+"_D.M3.MM2Theme", "rt") as file:
+			if DEBUG_OUTPUT: self.Day_M3.print()
+		with open(DIRECTORY+"MM2Theme-Input/"+ThemePrefix+"_D.M3.MM2Theme", "rt") as file:
 			self.Night_M3 = MM2Theme_M3(json.load(file))
-			self.Night_M3.print()
+			if DEBUG_OUTPUT: self.Night_M3.print()
 
-		with open("MM2Theme-Input/"+ThemePrefix+".MW.MM2Theme", "rt") as file:
+		with open(DIRECTORY+"MM2Theme-Input/"+ThemePrefix+".MW.MM2Theme", "rt") as file:
 			self.Day_MW = MM2Theme_MW(json.load(file))
-			self.Day_MW.print()
-		with open("MM2Theme-Input/"+ThemePrefix+"_D.MW.MM2Theme", "rt") as file:
+			if DEBUG_OUTPUT: self.Day_MW.print()
+		with open(DIRECTORY+"MM2Theme-Input/"+ThemePrefix+"_D.MW.MM2Theme", "rt") as file:
 			self.Night_MW = MM2Theme_MW(json.load(file))
-			self.Night_MW.print()
+			if DEBUG_OUTPUT: self.Night_MW.print()
 
-		with open("MM2Theme-Input/"+ThemePrefix+".WU.MM2Theme", "rt") as file:
+		with open(DIRECTORY+"MM2Theme-Input/"+ThemePrefix+".WU.MM2Theme", "rt") as file:
 			self.Day_WU = MM2Theme_WU(json.load(file))
-			self.Day_WU.print()
-		with open("MM2Theme-Input/"+ThemePrefix+"_D.WU.MM2Theme", "rt") as file:
+			if DEBUG_OUTPUT: self.Day_WU.print()
+		with open(DIRECTORY+"MM2Theme-Input/"+ThemePrefix+"_D.WU.MM2Theme", "rt") as file:
 			self.Night_WU = MM2Theme_WU(json.load(file))
-			self.Night_WU.print()
+			if DEBUG_OUTPUT: self.Night_WU.print()
 
-		with open("MM2Theme-Input/"+ThemePrefix+".3W.MM2Theme", "rt") as file:
+		with open(DIRECTORY+"MM2Theme-Input/"+ThemePrefix+".3W.MM2Theme", "rt") as file:
 			self.Day_3W = MM2Theme_3W(json.load(file))
-			self.Day_3W.print()
-		#with open("MM2Theme-Input/"+ThemePrefix+"_D.3W.MM2Theme", "rt") as file:
-		with open("MM2Theme-Input/"+ThemePrefix+".3W.MM2Theme", "rt") as file:
-			self.Night_3W = MM2Theme_3W(json.load(file))
-			self.Night_3W.print()
+			if DEBUG_OUTPUT: self.Day_3W.print()
+		#with open(DIRECTORY+"MM2Theme-Input/"+ThemePrefix+"_D.3W.MM2Theme", "rt") as file:
+		#	self.Night_3W = MM2Theme_3W(json.load(file))
+		#	if DEBUG_OUTPUT: self.Night_3W.print()
 		
 
 def main():
@@ -466,37 +467,39 @@ def main():
 				Atheltic.Day_WU.as_byml_dict(),		Atheltic.Night_WU.as_byml_dict(),
 				Woods.Day_WU.as_byml_dict(),		Woods.Night_WU.as_byml_dict(),
 				Sewer.Day_WU.as_byml_dict(),		Sewer.Night_WU.as_byml_dict()]
-	Scenes_3W= [Plains.Day_3W.as_byml_dict(),		Plains.Night_3W.as_byml_dict(),
-				Underground.Day_3W.as_byml_dict(),	Underground.Night_3W.as_byml_dict(),
-				Castle.Day_3W.as_byml_dict(),		Castle.Night_3W.as_byml_dict(),
-				Airship.Day_3W.as_byml_dict(),		Airship.Night_3W.as_byml_dict(),
-				Water.Day_3W.as_byml_dict(),		Water.Night_3W.as_byml_dict(),
-				GhostHouse.Day_3W.as_byml_dict(),	GhostHouse.Night_3W.as_byml_dict(),
-				Snow.Day_3W.as_byml_dict(),			Snow.Night_3W.as_byml_dict(),
-				Desert.Day_3W.as_byml_dict(),		Desert.Night_3W.as_byml_dict(),
-				Atheltic.Day_3W.as_byml_dict(),		Atheltic.Night_3W.as_byml_dict(),
-				Woods.Day_3W.as_byml_dict(),		Woods.Night_3W.as_byml_dict(),
-				Sewer.Day_3W.as_byml_dict(),		Sewer.Night_3W.as_byml_dict()]
+	Scenes_3W= [Plains.Day_3W.as_byml_dict(),		Plains.Day_3W.as_byml_dict(),
+				Underground.Day_3W.as_byml_dict(),	Underground.Day_3W.as_byml_dict(),
+				Castle.Day_3W.as_byml_dict(),		Castle.Day_3W.as_byml_dict(),
+				Airship.Day_3W.as_byml_dict(),		Airship.Day_3W.as_byml_dict(),
+				Water.Day_3W.as_byml_dict(),		Water.Day_3W.as_byml_dict(),
+				GhostHouse.Day_3W.as_byml_dict(),	GhostHouse.Day_3W.as_byml_dict(),
+				Snow.Day_3W.as_byml_dict(),			Snow.Day_3W.as_byml_dict(),
+				Desert.Day_3W.as_byml_dict(),		Desert.Day_3W.as_byml_dict(),
+				Atheltic.Day_3W.as_byml_dict(),		Atheltic.Day_3W.as_byml_dict(),
+				Woods.Day_3W.as_byml_dict(),		Woods.Day_3W.as_byml_dict(),
+				Sewer.Day_3W.as_byml_dict(),		Sewer.Day_3W.as_byml_dict()]
 
-	with open("BYML-Output/M1_SceneDB.yaml", "wt") as file:
+	with open(DIRECTORY+"BYML-Output/M1_SceneDB.yaml", "wt") as file:
 		file.write(oead.byml.to_text(Scenes_M1))
-	with open("BYML-Output/M1_SceneDB.byml", "wb") as file:
+	with open(DIRECTORY+"BYML-Output/M1_SceneDB.byml", "wb") as file:
 		file.write(oead.byml.to_binary(Scenes_M1, False, 1))
-	with open("BYML-Output/M3_SceneDB.yaml", "wt") as file:
+	with open(DIRECTORY+"BYML-Output/M3_SceneDB.yaml", "wt") as file:
 		file.write(oead.byml.to_text(Scenes_M3))
-	with open("BYML-Output/M3_SceneDB.byml", "wb") as file:
+	with open(DIRECTORY+"BYML-Output/M3_SceneDB.byml", "wb") as file:
 		file.write(oead.byml.to_binary(Scenes_M3, False, 1))
-	with open("BYML-Output/MW_SceneDB.yaml", "wt") as file:
+	with open(DIRECTORY+"BYML-Output/MW_SceneDB.yaml", "wt") as file:
 		file.write(oead.byml.to_text(Scenes_MW))
-	with open("BYML-Output/MW_SceneDB.byml", "wb") as file:
+	with open(DIRECTORY+"BYML-Output/MW_SceneDB.byml", "wb") as file:
 		file.write(oead.byml.to_binary(Scenes_MW, False, 1))
-	with open("BYML-Output/WU_SceneDB.yaml", "wt") as file:
+	with open(DIRECTORY+"BYML-Output/WU_SceneDB.yaml", "wt") as file:
 		file.write(oead.byml.to_text(Scenes_WU))
-	with open("BYML-Output/WU_SceneDB.byml", "wb") as file:
+	with open(DIRECTORY+"BYML-Output/WU_SceneDB.byml", "wb") as file:
 		file.write(oead.byml.to_binary(Scenes_WU, False, 1))
-	with open("BYML-Output/3W_SceneDB.yaml", "wt") as file:
+	with open(DIRECTORY+"BYML-Output/3W_SceneDB.yaml", "wt") as file:
 		file.write(oead.byml.to_text(Scenes_3W))
-	with open("BYML-Output/3W_SceneDB.byml", "wb") as file:
+	with open(DIRECTORY+"BYML-Output/3W_SceneDB.byml", "wb") as file:
 		file.write(oead.byml.to_binary(Scenes_3W, False, 1))
 
-main()
+if __name__ == "__main__":
+	DEBUG_OUTPUT = True
+	main()

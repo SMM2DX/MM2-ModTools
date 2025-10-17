@@ -1,3 +1,6 @@
 [submodule "Assets/fugue-icons"]
 	path = Assets/fugue-icons
 	url = git@github.com:unikent/fugue-icons.git
+[submodule "Modules/MarginTool"]
+	path = Modules/MarginTool
+	url = git@github.com:SMM2DX/NSMBU-Margin-Tool.git
