@@ -14,7 +14,7 @@ class MainWindow(QMainWindow):
 	def __init__(self):
 		super().__init__()
 
-		self.setWindowTitle("MM2MM - Mario Maker 2 Mod Manager")
+		self.setWindowTitle("MM2MT - Mario Maker 2 Mod Tools")
 		self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
 		self.customContextMenuRequested.connect(self.context_menu)
 		self.setStatusBar(QStatusBar(self))
