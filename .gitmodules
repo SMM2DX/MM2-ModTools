@@ -1,0 +1,3 @@
+[submodule "fugue-icons"]
+	path = fugue-icons
+	url = git@github.com:unikent/fugue-icons.git
