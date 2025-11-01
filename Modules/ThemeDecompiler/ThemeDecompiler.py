@@ -89,11 +89,11 @@ def main():
 	for fileName in os.listdir(DIRECTORY+"BYML-Input/"):
 		if not fileName.endswith(".byml"): continue
 		with open(DIRECTORY+"BYML-Input/"+fileName, "rb") as bymlFile:
-			for theme in oead.byml.from_binary(bymlFile.read()):
-				themeJson = bymlToJson(theme)
-				if DEBUG_OUTPUT: print(themeJson)
-				with open(DIRECTORY+"MM2Theme-Output/"+theme["FieldModel"][9:]+"."+fileName[:2]+".MM2Theme", "wt") as jsonFile:
-					json.dump(themeJson, jsonFile)
+			for theme_dict in oead.byml.from_binary(bymlFile.read()):				
+				#if DEBUG_OUTPUT: print(Theme.as_json_dict())
+				return
+				with open(DIRECTORY+"MM2Theme-Output/"+Theme.Theme_Name+"."+Theme.Style.value+".MM2Theme", "wt") as jsonFile:
+					json.dump(Theme.as_json_dict(), jsonFile)
 
 if __name__ == "__main__":
 	DEBUG_OUTPUT = True

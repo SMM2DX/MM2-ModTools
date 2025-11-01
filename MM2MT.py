@@ -52,7 +52,7 @@ class MainWindow(QMainWindow):
 				tabLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 				tabLabel = QLabel()
 				tabLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-				tabLabel.setText("Theme Decompiler")
+				tabLabel.setText("Theme Decompiler\n(BROKEN sorry :<)")
 				tabLayout.addWidget(tabLabel)
 				tabButton = QPushButton()
 				tabButton.setText("Run")
@@ -140,20 +140,23 @@ class MainWindow(QMainWindow):
 			CompileThemes()
 			QMessageBox.information(self, "Success", "Finished Successfully")
 	def decompile_button_clicked(self):
-		response = QMessageBox.question(self, "Are you sure?", "Are you sure you want to decompile .byml files to .MM2Theme?")
-		if response == QMessageBox.StandardButton.Yes:
-			DecompileThemes()
-			QMessageBox.information(self, "Success", "Finished Successfully")
+		QMessageBox.warning(self, "Broken", "This feature is currently broken.\nsowwy :<")
+		#response = QMessageBox.question(self, "Are you sure?", "Are you sure you want to decompile .byml files to .MM2Theme?")
+		#if response == QMessageBox.StandardButton.Yes:
+		#	DecompileThemes()
+		#	QMessageBox.information(self, "Success", "Finished Successfully")
 	def margin_remove_button_clicked(self):
 		QMessageBox.warning(self, "Unimplemented", "This feature is currently unimplemented.")
 		# response = QMessageBox.question(self, "Are you sure?", "Are you sure you want to remove tileset margins?")
 		# if response == QMessageBox.StandardButton.Yes:
 		# 	RemoveMargins()
+		#	QMessageBox.information(self, "Success", "Finished Successfully")
 	def margin_add_button_clicked(self):
 		QMessageBox.warning(self, "Unimplemented", "This feature is currently unimplemented.")
 		# response = QMessageBox.question(self, "Are you sure?", "Are you sure you want to add tileset margins?")
 		# if response == QMessageBox.StandardButton.Yes:
 		# 	AddMargins()
+		#	QMessageBox.information(self, "Success", "Finished Successfully")
 
 	def context_menu(self, pos):
 		context = QMenu(self)
