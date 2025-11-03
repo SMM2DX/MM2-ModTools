@@ -1,4 +1,8 @@
+import os
 import sys
+import json
+import oead
+from Modules.MM2Things import THEMES, GameStyle, SMB1_Theme, SMB3_Theme, SMW_Theme, NSMBU_Theme, SM3DW_Theme, MyWorld_Theme
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QAction, QIcon, QKeySequence, QPixmap
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QToolBar, QMenu, QStatusBar, QMessageBox, QWidget,
@@ -6,9 +10,45 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QToolBar, QMenu, QStatus
 )
 
 from Modules.ThemeCompiler.ThemeCompiler import main as CompileThemes
-from Modules.ThemeDecompiler.ThemeDecompiler import main as DecompileThemes
 #from Modules.MarginTool.margintool import main as RemoveMargins
 #from Modules.MarginTool.reversemargintool import main as AddMargins
+
+DIRECTORY = os.path.dirname(__file__)+"/"
+if not os.path.exists(DIRECTORY+"BYML-Input/"):
+	os.makedirs(DIRECTORY+"BYML-Input/")
+
+#def CompileThemes(window): THEMES[GameStyle.SMB1][0].print()
+
+def DecompileThemes(window):
+	if not os.path.exists(DIRECTORY+"BYML-Input/"):
+		os.makedirs(DIRECTORY+"BYML-Input/")
+	if not os.path.exists(DIRECTORY+"MM2Theme-Output/"):
+		os.makedirs(DIRECTORY+"MM2Theme-Output/")
+	
+	for fileName in os.listdir(DIRECTORY+"BYML-Input/"):
+		if not fileName.endswith(".byml"): continue
+		with open(DIRECTORY+"BYML-Input/"+fileName, "rb") as bymlFile:
+			for theme_dict in oead.byml.from_binary(bymlFile.read()):
+				Theme = None
+				if (fileName.startswith("M1_")): Theme = SMB1_Theme.from_byml_dict(theme_dict)
+				elif (fileName.startswith("M3_")): Theme = SMB3_Theme.from_byml_dict(theme_dict)
+				elif (fileName.startswith("MW_")): Theme = SMW_Theme.from_byml_dict(theme_dict)
+				elif (fileName.startswith("WU_")): Theme = NSMBU_Theme.from_byml_dict(theme_dict)
+				elif (fileName.startswith("3W_")): Theme = SM3DW_Theme.from_byml_dict(theme_dict)
+				elif (fileName.endswith("_MyWorld.byml")): Theme = MyWorld_Theme.from_byml_dict(theme_dict)
+				else:
+					QMessageBox.warning(window, "Invalid File", f"Encountered file {fileName} with invalid Gamestyle, skipping")
+					break
+				
+				with open(DIRECTORY+"MM2Theme-Output/"+Theme.Theme_Name+"."+Theme.Style.value+".MM2Theme", "wt") as jsonFile:
+					json.dump(Theme.as_json_dict(), jsonFile)
+	window.themeCountTxtWidget.setText(f"{GameStyle.SMB1.name}: {len(THEMES[GameStyle.SMB1])} - " +
+										f"{GameStyle.SMB3.name}: {len(THEMES[GameStyle.SMB3])} - " +
+										f"{GameStyle.SMW.name}: {len(THEMES[GameStyle.SMW])} - " +
+										f"{GameStyle.NSMBU.name}: {len(THEMES[GameStyle.NSMBU])}\n" +
+										f"{GameStyle.SM3DW.name}: {len(THEMES[GameStyle.SM3DW])} - " +
+										f"{GameStyle.MyWorld.name}: {len(THEMES[GameStyle.MyWorld])}")
+
 
 class MainWindow(QMainWindow):
 	def __init__(self):
@@ -52,7 +92,7 @@ class MainWindow(QMainWindow):
 				tabLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 				tabLabel = QLabel()
 				tabLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-				tabLabel.setText("Theme Decompiler\n(BROKEN sorry :<)")
+				tabLabel.setText("Theme Decompiler")
 				tabLayout.addWidget(tabLabel)
 				tabButton = QPushButton()
 				tabButton.setText("Run")
@@ -95,10 +135,15 @@ class MainWindow(QMainWindow):
 			placeholderImgWidget.setAlignment(Qt.AlignmentFlag.AlignCenter)
 			placeholderImgWidget.setPixmap(QPixmap("Assets/placeholder.png"))
 			tempLayout.addWidget(placeholderImgWidget)
-			placeholderTxtWidget = QLabel()
-			placeholderTxtWidget.setAlignment(Qt.AlignmentFlag.AlignCenter)
-			placeholderTxtWidget.setText("Please enjoy this pretty placeholder image")
-			tempLayout.addWidget(placeholderTxtWidget)
+			self.themeCountTxtWidget = QLabel()
+			self.themeCountTxtWidget.setAlignment(Qt.AlignmentFlag.AlignCenter)
+			self.themeCountTxtWidget.setText(f"{GameStyle.SMB1.name}: {len(THEMES[GameStyle.SMB1])} - " +
+											f"{GameStyle.SMB3.name}: {len(THEMES[GameStyle.SMB3])} - " +
+											f"{GameStyle.SMW.name}: {len(THEMES[GameStyle.SMW])} - " +
+											f"{GameStyle.NSMBU.name}: {len(THEMES[GameStyle.NSMBU])}\n" +
+											f"{GameStyle.SM3DW.name}: {len(THEMES[GameStyle.SM3DW])} - " +
+											f"{GameStyle.MyWorld.name}: {len(THEMES[GameStyle.MyWorld])}")
+			tempLayout.addWidget(self.themeCountTxtWidget)
 			temp.setLayout(tempLayout)
 			mainLayout.addWidget(temp)
 
@@ -137,14 +182,13 @@ class MainWindow(QMainWindow):
 	def compile_button_clicked(self):
 		response = QMessageBox.question(self, "Are you sure?", "Are you sure you want to compile .MM2Theme files to .byml?")
 		if response == QMessageBox.StandardButton.Yes:
-			CompileThemes()
+			CompileThemes(self)
 			QMessageBox.information(self, "Success", "Finished Successfully")
 	def decompile_button_clicked(self):
-		QMessageBox.warning(self, "Broken", "This feature is currently broken.\nsowwy :<")
-		#response = QMessageBox.question(self, "Are you sure?", "Are you sure you want to decompile .byml files to .MM2Theme?")
-		#if response == QMessageBox.StandardButton.Yes:
-		#	DecompileThemes()
-		#	QMessageBox.information(self, "Success", "Finished Successfully")
+		response = QMessageBox.question(self, "Are you sure?", "Are you sure you want to decompile .byml files to .MM2Theme?")
+		if response == QMessageBox.StandardButton.Yes:
+			DecompileThemes(self)
+			QMessageBox.information(self, "Success", "Finished Successfully")
 	def margin_remove_button_clicked(self):
 		QMessageBox.warning(self, "Unimplemented", "This feature is currently unimplemented.")
 		# response = QMessageBox.question(self, "Are you sure?", "Are you sure you want to remove tileset margins?")

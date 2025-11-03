@@ -3,13 +3,12 @@ from enum import Enum
 
 # Enums
 class GameStyle(Enum):
-	Unknown	= '??'
-	MyWorld	= 'MyWorld'
 	SMB1	= 'M1'
 	SMB3	= 'M3'
 	SMW		= 'MW'
 	NSMBU	= 'WU'
 	SM3DW	= '3W'
+	MyWorld	= 'MyWorld'
 
 class Vertical_Background_Anchor_Enum(Enum):
 	Top		= '上基準'
@@ -17,104 +16,18 @@ class Vertical_Background_Anchor_Enum(Enum):
 
 # Theme Classes
 class Theme():
-	Style: GameStyle = GameStyle.Unknown
+	Style: GameStyle
 	Theme_Name: str
 	def print(self):
 		pass
-	def from_json_dict(dict):
+	def from_json_dict(json: dict):
 		pass
-	def from_byml_dict(dict):
+	def from_byml_dict(byml: dict):
 		pass
 	def as_json_dict(self) -> dict:
 		pass
 	def as_byml_dict(self) -> dict:
 		pass
-
-class MyWorld_Theme(Theme):
-	Style = GameStyle.MyWorld
-	Background_Model: str
-	Tileset_Model: str
-	Editor_Grid: list[float] # Vec4
-	WIP_Mask: list[float] # Vec5
-	WIP_NothingAreaAttr: str
-	WIP_RoadModel: str
-
-	def print(self):
-		print(self.Style.name+": "+self.Theme_Name+"\n"+
-			"> Background_Model:			"+str(self.Background_Model)+"\n"+
-			"> Tileset_Model:			"+str(self.Tileset_Model)+"\n"+
-			"> Editor_Grid:				"+str(self.Editor_Grid)+"\n"+
-			"> WIP_Mask:				"+str(self.WIP_Mask)+"\n"+
-			"> WIP_NothingAreaAttr:			"+str(self.WIP_NothingAreaAttr)+"\n"+
-			"> WIP_RoadModel:			"+str(self.WIP_RoadModel)+"\n"
-		)
-	def from_json_dict(dict) -> Theme:
-		self = MyWorld_Theme()
-		self.Theme_Name = dict["FieldModel"][14:]
-		self.Background_Model = dict["DVModel"]
-		self.Tileset_Model = dict["FieldModel"]
-		self.Editor_Grid = [
-			float(dict["Grid_R"]).__round__(5),
-			float(dict["Grid_G"]).__round__(5),
-			float(dict["Grid_B"]).__round__(5),
-			float(dict["Grid_A"]).__round__(5),
-		]
-		self.WIP_Mask = [
-			float(dict["Mask_R"]).__round__(5),
-			float(dict["Mask_G"]).__round__(5),
-			float(dict["Mask_B"]).__round__(5),
-			float(dict["Mask_A0"]).__round__(5),
-			float(dict["Mask_A1"]).__round__(5),
-		]
-		self.WIP_NothingAreaAttr = dict["NothingAreaAttr"]
-		self.WIP_RoadModel = dict["RoadModel"]
-		return self
-	def from_byml_dict(dict) -> Theme:
-		self = MyWorld_Theme()
-		self.Theme_Name = dict["FieldModel"][14:]
-		self.Background_Model = dict["DVModel"]
-		self.Tileset_Model = dict["FieldModel"]
-		self.Editor_Grid = [
-			float(dict["Grid_R"]).__round__(5),
-			float(dict["Grid_G"]).__round__(5),
-			float(dict["Grid_B"]).__round__(5),
-			float(dict["Grid_A"]).__round__(5),
-		]
-		self.WIP_Mask = [
-			float(dict["Mask_R"]).__round__(5),
-			float(dict["Mask_G"]).__round__(5),
-			float(dict["Mask_B"]).__round__(5),
-			float(dict["Mask_A0"]).__round__(5),
-			float(dict["Mask_A1"]).__round__(5),
-		]
-		self.WIP_NothingAreaAttr = dict["NothingAreaAttr"]
-		self.WIP_RoadModel = dict["RoadModel"]
-		return self
-	def as_json_dict(self) -> dict:
-		return {
-			"Background_Model": self.Background_Model,
-			"Tileset_Model": self.Tileset_Model,
-			"Editor_Grid": self.Editor_Grid,
-			"WIP_Mask": self.WIP_Mask,
-			"WIP_NothingAreaAttr": self.WIP_NothingAreaAttr,
-			"WIP_RoadModel": self.WIP_RoadModel,
-		}
-	def as_byml_dict(self) -> dict:
-		return {
-			"DVModel": self.Background_Model,
-			"FieldModel": self.Tileset_Model,
-			"Grid_R": oead.F32(self.Editor_Grid[0]),
-			"Grid_G": oead.F32(self.Editor_Grid[1]),
-			"Grid_B": oead.F32(self.Editor_Grid[2]),
-			"Grid_A": oead.F32(self.Editor_Grid[3]),
-			"Mask_R": oead.F32(self.WIP_Mask[0]),
-			"Mask_G": oead.F32(self.WIP_Mask[1]),
-			"Mask_B": oead.F32(self.WIP_Mask[2]),
-			"Mask_A0": oead.F32(self.WIP_Mask[3]),
-			"Mask_A1": oead.F32(self.WIP_Mask[4]),
-			"NothingAreaAttr": self.WIP_NothingAreaAttr,
-			"RoadModel": self.WIP_RoadModel,
-		}
 
 class SMB1_Theme(Theme):
 	Style = GameStyle.SMB1
@@ -148,82 +61,85 @@ class SMB1_Theme(Theme):
 			"> Shadow_Color:				"+str(self.Shadow_Color)+"\n"+
 			"> Shadow_Offset:			"+str(self.Shadow_Offset)+"\n"
 		)
-	def from_json_dict(dict) -> Theme:
+	def from_json_dict(json: dict) -> Theme:
 		self = SMB1_Theme()
-		self.Theme_Name = dict["FieldModel"][9:]
+		self.Theme_Name = json["Theme_Name"]
 		self.CustomScroll_Inside = [
-			float(dict["CSin_R"]).__round__(5),
-			float(dict["CSin_G"]).__round__(5),
-			float(dict["CSin_B"]).__round__(5),
-			float(dict["CSin_A"]).__round__(5),
+			float(json["CustomScroll_Inside"][0]).__round__(5),
+			float(json["CustomScroll_Inside"][1]).__round__(5),
+			float(json["CustomScroll_Inside"][2]).__round__(5),
+			float(json["CustomScroll_Inside"][3]).__round__(5),
 		]
 		self.CustomScroll_Outside = [
-			float(dict["CSout_R"]).__round__(5),
-			float(dict["CSout_G"]).__round__(5),
-			float(dict["CSout_B"]).__round__(5),
-			float(dict["CSout_A"]).__round__(5),
+			float(json["CustomScroll_Outside"][0]).__round__(5),
+			float(json["CustomScroll_Outside"][1]).__round__(5),
+			float(json["CustomScroll_Outside"][2]).__round__(5),
+			float(json["CustomScroll_Outside"][3]).__round__(5),
 		]
-		self.Background_Model = dict["DVModel"]
-		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(dict["DV_V_OffsetType"])
-		self.Enemy_Variant = dict["Enemy"]
-		self.Background_Lighting = dict["Env_DV"]
-		self.Vertical_Background_Lighting = dict["Env_DV_V"]
-		self.Lighting = dict["Env_Model"]
-		self.Tileset_Model_Animation_Type = dict["FieldAnime"]
-		self.Tileset_Model = dict["FieldModel"]
+		self.Background_Model = json["Background_Model"]
+		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(json["Vertical_Background_Anchor_Type"])
+		self.Enemy_Variant = json["Enemy_Variant"]
+		self.Background_Lighting = json["Background_Lighting"]
+		self.Vertical_Background_Lighting = json["Vertical_Background_Lighting"]
+		self.Lighting = json["Lighting"]
+		self.Tileset_Model_Animation_Type = json["Tileset_Model_Animation_Type"]
+		self.Tileset_Model = json["Tileset_Model"]
 		self.Editor_Grid = [
-			float(dict["Grid_R"]).__round__(5),
-			float(dict["Grid_G"]).__round__(5),
-			float(dict["Grid_B"]).__round__(5),
-			float(dict["Grid_A"]).__round__(5),
+			float(json["Editor_Grid"][0]).__round__(5),
+			float(json["Editor_Grid"][1]).__round__(5),
+			float(json["Editor_Grid"][2]).__round__(5),
+			float(json["Editor_Grid"][3]).__round__(5),
 		]
 		self.Shadow_Color = [
-			float(dict["Shadow_R"]).__round__(5),
-			float(dict["Shadow_G"]).__round__(5),
-			float(dict["Shadow_B"]).__round__(5),
-			float(dict["Shadow_A"]).__round__(5),
+			float(json["Shadow_Color"][0]).__round__(5),
+			float(json["Shadow_Color"][1]).__round__(5),
+			float(json["Shadow_Color"][2]).__round__(5),
+			float(json["Shadow_Color"][3]).__round__(5),
 		]
-		self.Shadow_Offset = float(dict["Shadow_Offset"]).__round__(5)
+		self.Shadow_Offset = float(json["Shadow_Offset"]).__round__(5)
+		THEMES[self.Style].append(self)
 		return self
-	def from_byml_dict(dict) -> Theme:
+	def from_byml_dict(byml: dict) -> Theme:
 		self = SMB1_Theme()
-		self.Theme_Name = dict["FieldModel"][9:]
+		self.Theme_Name = byml["FieldModel"][9:]
 		self.CustomScroll_Inside = [
-			float(dict["CSin_R"]).__round__(5),
-			float(dict["CSin_G"]).__round__(5),
-			float(dict["CSin_B"]).__round__(5),
-			float(dict["CSin_A"]).__round__(5),
+			float(byml["CSin_R"]).__round__(5),
+			float(byml["CSin_G"]).__round__(5),
+			float(byml["CSin_B"]).__round__(5),
+			float(byml["CSin_A"]).__round__(5),
 		]
 		self.CustomScroll_Outside = [
-			float(dict["CSout_R"]).__round__(5),
-			float(dict["CSout_G"]).__round__(5),
-			float(dict["CSout_B"]).__round__(5),
-			float(dict["CSout_A"]).__round__(5),
+			float(byml["CSout_R"]).__round__(5),
+			float(byml["CSout_G"]).__round__(5),
+			float(byml["CSout_B"]).__round__(5),
+			float(byml["CSout_A"]).__round__(5),
 		]
-		self.Background_Model = dict["DVModel"]
-		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(dict["DV_V_OffsetType"])
-		self.Enemy_Variant = dict["Enemy"]
-		self.Background_Lighting = dict["Env_DV"]
-		self.Vertical_Background_Lighting = dict["Env_DV_V"]
-		self.Lighting = dict["Env_Model"]
-		self.Tileset_Model_Animation_Type = dict["FieldAnime"]
-		self.Tileset_Model = dict["FieldModel"]
+		self.Background_Model = byml["DVModel"]
+		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(byml["DV_V_OffsetType"])
+		self.Enemy_Variant = byml["Enemy"]
+		self.Background_Lighting = byml["Env_DV"]
+		self.Vertical_Background_Lighting = byml["Env_DV_V"]
+		self.Lighting = byml["Env_Model"]
+		self.Tileset_Model_Animation_Type = byml["FieldAnime"]
+		self.Tileset_Model = byml["FieldModel"]
 		self.Editor_Grid = [
-			float(dict["Grid_R"]).__round__(5),
-			float(dict["Grid_G"]).__round__(5),
-			float(dict["Grid_B"]).__round__(5),
-			float(dict["Grid_A"]).__round__(5),
+			float(byml["Grid_R"]).__round__(5),
+			float(byml["Grid_G"]).__round__(5),
+			float(byml["Grid_B"]).__round__(5),
+			float(byml["Grid_A"]).__round__(5),
 		]
 		self.Shadow_Color = [
-			float(dict["Shadow_R"]).__round__(5),
-			float(dict["Shadow_G"]).__round__(5),
-			float(dict["Shadow_B"]).__round__(5),
-			float(dict["Shadow_A"]).__round__(5),
+			float(byml["Shadow_R"]).__round__(5),
+			float(byml["Shadow_G"]).__round__(5),
+			float(byml["Shadow_B"]).__round__(5),
+			float(byml["Shadow_A"]).__round__(5),
 		]
-		self.Shadow_Offset = float(dict["Shadow_Offset"]).__round__(5)
+		self.Shadow_Offset = float(byml["Shadow_Offset"]).__round__(5)
+		THEMES[self.Style].append(self)
 		return self
 	def as_json_dict(self) -> dict:
 		return {
+			"Theme_Name": self.Theme_Name,
 			"CustomScroll_Inside": self.CustomScroll_Inside,
 			"CustomScroll_Outside": self.CustomScroll_Outside,
 			"Background_Model": self.Background_Model,
@@ -299,82 +215,85 @@ class SMB3_Theme(Theme):
 			"> Shadow_Color:				"+str(self.Shadow_Color)+"\n"+
 			"> Shadow_Offset:			"+str(self.Shadow_Offset)+"\n"
 		)
-	def from_json_dict(dict) -> Theme:
+	def from_json_dict(json: dict) -> Theme:
 		self = SMB3_Theme()
-		self.Theme_Name = dict["FieldModel"][9:]
+		self.Theme_Name = json["Theme_Name"]
 		self.CustomScroll_Inside = [
-			float(dict["CSin_R"]).__round__(5),
-			float(dict["CSin_G"]).__round__(5),
-			float(dict["CSin_B"]).__round__(5),
-			float(dict["CSin_A"]).__round__(5),
+			float(json["CustomScroll_Inside"][0]).__round__(5),
+			float(json["CustomScroll_Inside"][1]).__round__(5),
+			float(json["CustomScroll_Inside"][2]).__round__(5),
+			float(json["CustomScroll_Inside"][3]).__round__(5),
 		]
 		self.CustomScroll_Outside = [
-			float(dict["CSout_R"]).__round__(5),
-			float(dict["CSout_G"]).__round__(5),
-			float(dict["CSout_B"]).__round__(5),
-			float(dict["CSout_A"]).__round__(5),
+			float(json["CustomScroll_Outside"][0]).__round__(5),
+			float(json["CustomScroll_Outside"][1]).__round__(5),
+			float(json["CustomScroll_Outside"][2]).__round__(5),
+			float(json["CustomScroll_Outside"][3]).__round__(5),
 		]
-		self.Background_Model = dict["DVModel"]
-		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(dict["DV_V_OffsetType"])
-		self.Enemy_Variant = dict["Enemy"]
-		self.Background_Lighting = dict["Env_DV"]
-		self.Vertical_Background_Lighting = dict["Env_DV_V"]
-		self.Lighting = dict["Env_Model"]
-		self.Tileset_Model_Animation_Type = dict["FieldAnime"]
-		self.Tileset_Model = dict["FieldModel"]
+		self.Background_Model = json["Background_Model"]
+		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(json["Vertical_Background_Anchor_Type"])
+		self.Enemy_Variant = json["Enemy_Variant"]
+		self.Background_Lighting = json["Background_Lighting"]
+		self.Vertical_Background_Lighting = json["Vertical_Background_Lighting"]
+		self.Lighting = json["Lighting"]
+		self.Tileset_Model_Animation_Type = json["Tileset_Model_Animation_Type"]
+		self.Tileset_Model = json["Tileset_Model"]
 		self.Editor_Grid = [
-			float(dict["Grid_R"]).__round__(5),
-			float(dict["Grid_G"]).__round__(5),
-			float(dict["Grid_B"]).__round__(5),
-			float(dict["Grid_A"]).__round__(5),
+			float(json["Editor_Grid"][0]).__round__(5),
+			float(json["Editor_Grid"][1]).__round__(5),
+			float(json["Editor_Grid"][2]).__round__(5),
+			float(json["Editor_Grid"][3]).__round__(5),
 		]
 		self.Shadow_Color = [
-			float(dict["Shadow_R"]).__round__(5),
-			float(dict["Shadow_G"]).__round__(5),
-			float(dict["Shadow_B"]).__round__(5),
-			float(dict["Shadow_A"]).__round__(5),
+			float(json["Shadow_Color"][0]).__round__(5),
+			float(json["Shadow_Color"][1]).__round__(5),
+			float(json["Shadow_Color"][2]).__round__(5),
+			float(json["Shadow_Color"][3]).__round__(5),
 		]
-		self.Shadow_Offset = float(dict["Shadow_Offset"]).__round__(5)
+		self.Shadow_Offset = float(json["Shadow_Offset"]).__round__(5)
+		THEMES[self.Style].append(self)
 		return self
-	def from_byml_dict(dict) -> Theme:
+	def from_byml_dict(byml: dict) -> Theme:
 		self = SMB3_Theme()
-		self.Theme_Name = dict["FieldModel"][9:]
+		self.Theme_Name = byml["FieldModel"][9:]
 		self.CustomScroll_Inside = [
-			float(dict["CSin_R"]).__round__(5),
-			float(dict["CSin_G"]).__round__(5),
-			float(dict["CSin_B"]).__round__(5),
-			float(dict["CSin_A"]).__round__(5),
+			float(byml["CSin_R"]).__round__(5),
+			float(byml["CSin_G"]).__round__(5),
+			float(byml["CSin_B"]).__round__(5),
+			float(byml["CSin_A"]).__round__(5),
 		]
 		self.CustomScroll_Outside = [
-			float(dict["CSout_R"]).__round__(5),
-			float(dict["CSout_G"]).__round__(5),
-			float(dict["CSout_B"]).__round__(5),
-			float(dict["CSout_A"]).__round__(5),
+			float(byml["CSout_R"]).__round__(5),
+			float(byml["CSout_G"]).__round__(5),
+			float(byml["CSout_B"]).__round__(5),
+			float(byml["CSout_A"]).__round__(5),
 		]
-		self.Background_Model = dict["DVModel"]
-		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(dict["DV_V_OffsetType"])
-		self.Enemy_Variant = dict["Enemy"]
-		self.Background_Lighting = dict["Env_DV"]
-		self.Vertical_Background_Lighting = dict["Env_DV_V"]
-		self.Lighting = dict["Env_Model"]
-		self.Tileset_Model_Animation_Type = dict["FieldAnime"]
-		self.Tileset_Model = dict["FieldModel"]
+		self.Background_Model = byml["DVModel"]
+		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(byml["DV_V_OffsetType"])
+		self.Enemy_Variant = byml["Enemy"]
+		self.Background_Lighting = byml["Env_DV"]
+		self.Vertical_Background_Lighting = byml["Env_DV_V"]
+		self.Lighting = byml["Env_Model"]
+		self.Tileset_Model_Animation_Type = byml["FieldAnime"]
+		self.Tileset_Model = byml["FieldModel"]
 		self.Editor_Grid = [
-			float(dict["Grid_R"]).__round__(5),
-			float(dict["Grid_G"]).__round__(5),
-			float(dict["Grid_B"]).__round__(5),
-			float(dict["Grid_A"]).__round__(5),
+			float(byml["Grid_R"]).__round__(5),
+			float(byml["Grid_G"]).__round__(5),
+			float(byml["Grid_B"]).__round__(5),
+			float(byml["Grid_A"]).__round__(5),
 		]
 		self.Shadow_Color = [
-			float(dict["Shadow_R"]).__round__(5),
-			float(dict["Shadow_G"]).__round__(5),
-			float(dict["Shadow_B"]).__round__(5),
-			float(dict["Shadow_A"]).__round__(5),
+			float(byml["Shadow_R"]).__round__(5),
+			float(byml["Shadow_G"]).__round__(5),
+			float(byml["Shadow_B"]).__round__(5),
+			float(byml["Shadow_A"]).__round__(5),
 		]
-		self.Shadow_Offset = float(dict["Shadow_Offset"]).__round__(5)
+		self.Shadow_Offset = float(byml["Shadow_Offset"]).__round__(5)
+		THEMES[self.Style].append(self)
 		return self
 	def as_json_dict(self) -> dict:
 		return {
+			"Theme_Name": self.Theme_Name,
 			"CustomScroll_Inside": self.CustomScroll_Inside,
 			"CustomScroll_Outside": self.CustomScroll_Outside,
 			"Background_Model": self.Background_Model,
@@ -450,82 +369,85 @@ class SMW_Theme(Theme):
 			"> Shadow_Color:				"+str(self.Shadow_Color)+"\n"+
 			"> Shadow_Offset:			"+str(self.Shadow_Offset)+"\n"
 		)
-	def from_json_dict(dict) -> Theme:
+	def from_json_dict(json: dict) -> Theme:
 		self = SMW_Theme()
-		self.Theme_Name = dict["FieldModel"][9:]
+		self.Theme_Name = json["Theme_Name"]
 		self.CustomScroll_Inside = [
-			float(dict["CSin_R"]).__round__(5),
-			float(dict["CSin_G"]).__round__(5),
-			float(dict["CSin_B"]).__round__(5),
-			float(dict["CSin_A"]).__round__(5),
+			float(json["CustomScroll_Inside"][0]).__round__(5),
+			float(json["CustomScroll_Inside"][1]).__round__(5),
+			float(json["CustomScroll_Inside"][2]).__round__(5),
+			float(json["CustomScroll_Inside"][3]).__round__(5),
 		]
 		self.CustomScroll_Outside = [
-			float(dict["CSout_R"]).__round__(5),
-			float(dict["CSout_G"]).__round__(5),
-			float(dict["CSout_B"]).__round__(5),
-			float(dict["CSout_A"]).__round__(5),
+			float(json["CustomScroll_Outside"][0]).__round__(5),
+			float(json["CustomScroll_Outside"][1]).__round__(5),
+			float(json["CustomScroll_Outside"][2]).__round__(5),
+			float(json["CustomScroll_Outside"][3]).__round__(5),
 		]
-		self.Background_Model = dict["DVModel"]
-		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(dict["DV_V_OffsetType"])
-		self.Enemy_Variant = dict["Enemy"]
-		self.Background_Lighting = dict["Env_DV"]
-		self.Vertical_Background_Lighting = dict["Env_DV_V"]
-		self.Lighting = dict["Env_Model"]
-		self.Tileset_Model_Animation_Type = dict["FieldAnime"]
-		self.Tileset_Model = dict["FieldModel"]
+		self.Background_Model = json["Background_Model"]
+		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(json["Vertical_Background_Anchor_Type"])
+		self.Enemy_Variant = json["Enemy_Variant"]
+		self.Background_Lighting = json["Background_Lighting"]
+		self.Vertical_Background_Lighting = json["Vertical_Background_Lighting"]
+		self.Lighting = json["Lighting"]
+		self.Tileset_Model_Animation_Type = json["Tileset_Model_Animation_Type"]
+		self.Tileset_Model = json["Tileset_Model"]
 		self.Editor_Grid = [
-			float(dict["Grid_R"]).__round__(5),
-			float(dict["Grid_G"]).__round__(5),
-			float(dict["Grid_B"]).__round__(5),
-			float(dict["Grid_A"]).__round__(5),
+			float(json["Editor_Grid"][0]).__round__(5),
+			float(json["Editor_Grid"][1]).__round__(5),
+			float(json["Editor_Grid"][2]).__round__(5),
+			float(json["Editor_Grid"][3]).__round__(5),
 		]
 		self.Shadow_Color = [
-			float(dict["Shadow_R"]).__round__(5),
-			float(dict["Shadow_G"]).__round__(5),
-			float(dict["Shadow_B"]).__round__(5),
-			float(dict["Shadow_A"]).__round__(5),
+			float(json["Shadow_Color"][0]).__round__(5),
+			float(json["Shadow_Color"][1]).__round__(5),
+			float(json["Shadow_Color"][2]).__round__(5),
+			float(json["Shadow_Color"][3]).__round__(5),
 		]
-		self.Shadow_Offset = float(dict["Shadow_Offset"]).__round__(5)
+		self.Shadow_Offset = float(json["Shadow_Offset"]).__round__(5)
+		THEMES[self.Style].append(self)
 		return self
-	def from_byml_dict(dict) -> Theme:
+	def from_byml_dict(byml: dict) -> Theme:
 		self = SMW_Theme()
-		self.Theme_Name = dict["FieldModel"][9:]
+		self.Theme_Name = byml["FieldModel"][9:]
 		self.CustomScroll_Inside = [
-			float(dict["CSin_R"]).__round__(5),
-			float(dict["CSin_G"]).__round__(5),
-			float(dict["CSin_B"]).__round__(5),
-			float(dict["CSin_A"]).__round__(5),
+			float(byml["CSin_R"]).__round__(5),
+			float(byml["CSin_G"]).__round__(5),
+			float(byml["CSin_B"]).__round__(5),
+			float(byml["CSin_A"]).__round__(5),
 		]
 		self.CustomScroll_Outside = [
-			float(dict["CSout_R"]).__round__(5),
-			float(dict["CSout_G"]).__round__(5),
-			float(dict["CSout_B"]).__round__(5),
-			float(dict["CSout_A"]).__round__(5),
+			float(byml["CSout_R"]).__round__(5),
+			float(byml["CSout_G"]).__round__(5),
+			float(byml["CSout_B"]).__round__(5),
+			float(byml["CSout_A"]).__round__(5),
 		]
-		self.Background_Model = dict["DVModel"]
-		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(dict["DV_V_OffsetType"])
-		self.Enemy_Variant = dict["Enemy"]
-		self.Background_Lighting = dict["Env_DV"]
-		self.Vertical_Background_Lighting = dict["Env_DV_V"]
-		self.Lighting = dict["Env_Model"]
-		self.Tileset_Model_Animation_Type = dict["FieldAnime"]
-		self.Tileset_Model = dict["FieldModel"]
+		self.Background_Model = byml["DVModel"]
+		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(byml["DV_V_OffsetType"])
+		self.Enemy_Variant = byml["Enemy"]
+		self.Background_Lighting = byml["Env_DV"]
+		self.Vertical_Background_Lighting = byml["Env_DV_V"]
+		self.Lighting = byml["Env_Model"]
+		self.Tileset_Model_Animation_Type = byml["FieldAnime"]
+		self.Tileset_Model = byml["FieldModel"]
 		self.Editor_Grid = [
-			float(dict["Grid_R"]).__round__(5),
-			float(dict["Grid_G"]).__round__(5),
-			float(dict["Grid_B"]).__round__(5),
-			float(dict["Grid_A"]).__round__(5),
+			float(byml["Grid_R"]).__round__(5),
+			float(byml["Grid_G"]).__round__(5),
+			float(byml["Grid_B"]).__round__(5),
+			float(byml["Grid_A"]).__round__(5),
 		]
 		self.Shadow_Color = [
-			float(dict["Shadow_R"]).__round__(5),
-			float(dict["Shadow_G"]).__round__(5),
-			float(dict["Shadow_B"]).__round__(5),
-			float(dict["Shadow_A"]).__round__(5),
+			float(byml["Shadow_R"]).__round__(5),
+			float(byml["Shadow_G"]).__round__(5),
+			float(byml["Shadow_B"]).__round__(5),
+			float(byml["Shadow_A"]).__round__(5),
 		]
-		self.Shadow_Offset = float(dict["Shadow_Offset"]).__round__(5)
+		self.Shadow_Offset = float(byml["Shadow_Offset"]).__round__(5)
+		THEMES[self.Style].append(self)
 		return self
 	def as_json_dict(self) -> dict:
 		return {
+			"Theme_Name": self.Theme_Name,
 			"CustomScroll_Inside": self.CustomScroll_Inside,
 			"CustomScroll_Outside": self.CustomScroll_Outside,
 			"Background_Model": self.Background_Model,
@@ -617,108 +539,111 @@ class NSMBU_Theme(Theme):
 			"> Tileset_Model:			"+str(self.Tileset_Model)+"\n"+
 			"> Editor_Grid:				"+str(self.Editor_Grid)+"\n"
 		)
-	def from_json_dict(dict) -> Theme:
+	def from_json_dict(json: dict) -> Theme:
 		self = NSMBU_Theme()
-		self.Theme_Name = dict["FieldModel"][9:]
+		self.Theme_Name = json["Theme_Name"]
 		self.CustomScroll_Inside = [
-			float(dict["CSin_R"]).__round__(5),
-			float(dict["CSin_G"]).__round__(5),
-			float(dict["CSin_B"]).__round__(5),
-			float(dict["CSin_A"]).__round__(5),
+			float(json["CustomScroll_Inside"][0]).__round__(5),
+			float(json["CustomScroll_Inside"][1]).__round__(5),
+			float(json["CustomScroll_Inside"][2]).__round__(5),
+			float(json["CustomScroll_Inside"][3]).__round__(5),
 		]
 		self.CustomScroll_Outside = [
-			float(dict["CSout_R"]).__round__(5),
-			float(dict["CSout_G"]).__round__(5),
-			float(dict["CSout_B"]).__round__(5),
-			float(dict["CSout_A"]).__round__(5),
+			float(json["CustomScroll_Outside"][0]).__round__(5),
+			float(json["CustomScroll_Outside"][1]).__round__(5),
+			float(json["CustomScroll_Outside"][2]).__round__(5),
+			float(json["CustomScroll_Outside"][3]).__round__(5),
 		]
-		self.Background_Model = dict["DVModel"]
-		self.WIP_DV_CamMoveY = float(dict["DV_CamMoveY"]).__round__(5)
-		self.Play_Background_FOV = float(dict["DV_Play_Fovy"]).__round__(5)
-		self.WIP_DV_ProjMoveY = float(dict["DV_ProjMoveY"]).__round__(5)
-		self.WIP_DV_ProjOffsetY = float(dict["DV_ProjOffsetY"]).__round__(5)
-		self.WIP_DV_V_CamMoveY = float(dict["DV_V_CamMoveY"]).__round__(5)
-		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(dict["DV_V_OffsetType"])
-		self.WIP_DV_V_ProjMoveY = float(dict["DV_V_ProjMoveY"]).__round__(5)
-		self.WIP_DV_V_ProjOffsetY = float(dict["DV_V_ProjOffsetY"]).__round__(5)
+		self.Background_Model = json["Background_Model"]
+		self.WIP_DV_CamMoveY = float(json["WIP_DV_CamMoveY"]).__round__(5)
+		self.Play_Background_FOV = float(json["Play_Background_FOV"]).__round__(5)
+		self.WIP_DV_ProjMoveY = float(json["WIP_DV_ProjMoveY"]).__round__(5)
+		self.WIP_DV_ProjOffsetY = float(json["WIP_DV_ProjOffsetY"]).__round__(5)
+		self.WIP_DV_V_CamMoveY = float(json["WIP_DV_V_CamMoveY"]).__round__(5)
+		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(json["Vertical_Background_Anchor_Type"])
+		self.WIP_DV_V_ProjMoveY = float(json["WIP_DV_V_ProjMoveY"]).__round__(5)
+		self.WIP_DV_V_ProjOffsetY = float(json["WIP_DV_V_ProjOffsetY"]).__round__(5)
 		self.Vertical_Background_Position = [
-			float(dict["DV_V_pos_x"]).__round__(5),
-			float(dict["DV_V_pos_y"]).__round__(5),
+			float(json["Vertical_Background_Position"][0]).__round__(5),
+			float(json["Vertical_Background_Position"][1]).__round__(5),
 		]
 		self.Background_Position = [
-			float(dict["DV_pos_x"]).__round__(5),
-			float(dict["DV_pos_y"]).__round__(5),
+			float(json["Background_Position"][0]).__round__(5),
+			float(json["Background_Position"][1]).__round__(5),
 		]
 		self.Edge_Light_Color = [
-			float(dict["EdgeLightColor_R"]).__round__(5),
-			float(dict["EdgeLightColor_G"]).__round__(5),
-			float(dict["EdgeLightColor_B"]).__round__(5),
+			float(json["Edge_Light_Color"][0]).__round__(5),
+			float(json["Edge_Light_Color"][1]).__round__(5),
+			float(json["Edge_Light_Color"][2]).__round__(5),
 		]
-		self.Enemy_Variant = dict["Enemy"]
-		self.Background_Lighting = dict["Env_DV"]
-		self.Vertical_Background_Lighting = dict["Env_DV_V"]
-		self.Lighting = dict["Env_Model"]
-		self.Tileset_Model_Animation_Type = dict["FieldAnime"]
-		self.Tileset_Model = dict["FieldModel"]
+		self.Enemy_Variant = json["Enemy_Variant"]
+		self.Background_Lighting = json["Background_Lighting"]
+		self.Vertical_Background_Lighting = json["Vertical_Background_Lighting"]
+		self.Lighting = json["Lighting"]
+		self.Tileset_Model_Animation_Type = json["Tileset_Model_Animation_Type"]
+		self.Tileset_Model = json["Tileset_Model"]
 		self.Editor_Grid = [
-			float(dict["Grid_R"]).__round__(5),
-			float(dict["Grid_G"]).__round__(5),
-			float(dict["Grid_B"]).__round__(5),
-			float(dict["Grid_A"]).__round__(5),
+			float(json["Editor_Grid"][0]).__round__(5),
+			float(json["Editor_Grid"][1]).__round__(5),
+			float(json["Editor_Grid"][2]).__round__(5),
+			float(json["Editor_Grid"][3]).__round__(5),
 		]
+		THEMES[self.Style].append(self)
 		return self
-	def from_byml_dict(dict) -> Theme:
+	def from_byml_dict(byml: dict) -> Theme:
 		self = NSMBU_Theme()
-		self.Theme_Name = dict["FieldModel"][9:]
+		self.Theme_Name = byml["FieldModel"][9:]
 		self.CustomScroll_Inside = [
-			float(dict["CSin_R"]).__round__(5),
-			float(dict["CSin_G"]).__round__(5),
-			float(dict["CSin_B"]).__round__(5),
-			float(dict["CSin_A"]).__round__(5),
+			float(byml["CSin_R"]).__round__(5),
+			float(byml["CSin_G"]).__round__(5),
+			float(byml["CSin_B"]).__round__(5),
+			float(byml["CSin_A"]).__round__(5),
 		]
 		self.CustomScroll_Outside = [
-			float(dict["CSout_R"]).__round__(5),
-			float(dict["CSout_G"]).__round__(5),
-			float(dict["CSout_B"]).__round__(5),
-			float(dict["CSout_A"]).__round__(5),
+			float(byml["CSout_R"]).__round__(5),
+			float(byml["CSout_G"]).__round__(5),
+			float(byml["CSout_B"]).__round__(5),
+			float(byml["CSout_A"]).__round__(5),
 		]
-		self.Background_Model = dict["DVModel"]
-		self.WIP_DV_CamMoveY = float(dict["DV_CamMoveY"]).__round__(5)
-		self.Play_Background_FOV = float(dict["DV_Play_Fovy"]).__round__(5)
-		self.WIP_DV_ProjMoveY = float(dict["DV_ProjMoveY"]).__round__(5)
-		self.WIP_DV_ProjOffsetY = float(dict["DV_ProjOffsetY"]).__round__(5)
-		self.WIP_DV_V_CamMoveY = float(dict["DV_V_CamMoveY"]).__round__(5)
-		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(dict["DV_V_OffsetType"])
-		self.WIP_DV_V_ProjMoveY = float(dict["DV_V_ProjMoveY"]).__round__(5)
-		self.WIP_DV_V_ProjOffsetY = float(dict["DV_V_ProjOffsetY"]).__round__(5)
+		self.Background_Model = byml["DVModel"]
+		self.WIP_DV_CamMoveY = float(byml["DV_CamMoveY"]).__round__(5)
+		self.Play_Background_FOV = float(byml["DV_Play_Fovy"]).__round__(5)
+		self.WIP_DV_ProjMoveY = float(byml["DV_ProjMoveY"]).__round__(5)
+		self.WIP_DV_ProjOffsetY = float(byml["DV_ProjOffsetY"]).__round__(5)
+		self.WIP_DV_V_CamMoveY = float(byml["DV_V_CamMoveY"]).__round__(5)
+		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(byml["DV_V_OffsetType"])
+		self.WIP_DV_V_ProjMoveY = float(byml["DV_V_ProjMoveY"]).__round__(5)
+		self.WIP_DV_V_ProjOffsetY = float(byml["DV_V_ProjOffsetY"]).__round__(5)
 		self.Vertical_Background_Position = [
-			float(dict["DV_V_pos_x"]).__round__(5),
-			float(dict["DV_V_pos_y"]).__round__(5),
+			float(byml["DV_V_pos_x"]).__round__(5),
+			float(byml["DV_V_pos_y"]).__round__(5),
 		]
 		self.Background_Position = [
-			float(dict["DV_pos_x"]).__round__(5),
-			float(dict["DV_pos_y"]).__round__(5),
+			float(byml["DV_pos_x"]).__round__(5),
+			float(byml["DV_pos_y"]).__round__(5),
 		]
 		self.Edge_Light_Color = [
-			float(dict["EdgeLightColor_R"]).__round__(5),
-			float(dict["EdgeLightColor_G"]).__round__(5),
-			float(dict["EdgeLightColor_B"]).__round__(5),
+			float(byml["EdgeLightColor_R"]).__round__(5),
+			float(byml["EdgeLightColor_G"]).__round__(5),
+			float(byml["EdgeLightColor_B"]).__round__(5),
 		]
-		self.Enemy_Variant = dict["Enemy"]
-		self.Background_Lighting = dict["Env_DV"]
-		self.Vertical_Background_Lighting = dict["Env_DV_V"]
-		self.Lighting = dict["Env_Model"]
-		self.Tileset_Model_Animation_Type = dict["FieldAnime"]
-		self.Tileset_Model = dict["FieldModel"]
+		self.Enemy_Variant = byml["Enemy"]
+		self.Background_Lighting = byml["Env_DV"]
+		self.Vertical_Background_Lighting = byml["Env_DV_V"]
+		self.Lighting = byml["Env_Model"]
+		self.Tileset_Model_Animation_Type = byml["FieldAnime"]
+		self.Tileset_Model = byml["FieldModel"]
 		self.Editor_Grid = [
-			float(dict["Grid_R"]).__round__(5),
-			float(dict["Grid_G"]).__round__(5),
-			float(dict["Grid_B"]).__round__(5),
-			float(dict["Grid_A"]).__round__(5),
+			float(byml["Grid_R"]).__round__(5),
+			float(byml["Grid_G"]).__round__(5),
+			float(byml["Grid_B"]).__round__(5),
+			float(byml["Grid_A"]).__round__(5),
 		]
+		THEMES[self.Style].append(self)
 		return self
 	def as_json_dict(self) -> dict:
 		return {
+			"Theme_Name": self.Theme_Name,
 			"CustomScroll_Inside": self.CustomScroll_Inside,
 			"CustomScroll_Outside": self.CustomScroll_Outside,
 			"Background_Model": self.Background_Model,
@@ -821,82 +746,85 @@ class SM3DW_Theme(Theme):
 			"> Tileset_Model:			"+str(self.Tileset_Model)+"\n"+
 			"> Editor_Grid:				"+str(self.Editor_Grid)+"\n"
 		)
-	def from_json_dict(dict) -> Theme:
+	def from_json_dict(json: dict) -> Theme:
 		self = SM3DW_Theme()
-		self.Theme_Name = dict["FieldModel"][9:]
+		self.Theme_Name = json["Theme_Name"]
 		self.CustomScroll_Inside = [
-			float(dict["CSin_R"]).__round__(5),
-			float(dict["CSin_G"]).__round__(5),
-			float(dict["CSin_B"]).__round__(5),
-			float(dict["CSin_A"]).__round__(5),
+			float(json["CustomScroll_Inside"][0]).__round__(5),
+			float(json["CustomScroll_Inside"][1]).__round__(5),
+			float(json["CustomScroll_Inside"][2]).__round__(5),
+			float(json["CustomScroll_Inside"][3]).__round__(5),
 		]
 		self.CustomScroll_Outside = [
-			float(dict["CSout_R"]).__round__(5),
-			float(dict["CSout_G"]).__round__(5),
-			float(dict["CSout_B"]).__round__(5),
-			float(dict["CSout_A"]).__round__(5),
+			float(json["CustomScroll_Outside"][0]).__round__(5),
+			float(json["CustomScroll_Outside"][1]).__round__(5),
+			float(json["CustomScroll_Outside"][2]).__round__(5),
+			float(json["CustomScroll_Outside"][3]).__round__(5),
 		]
-		self.Background_Model = dict["DVModel"]
-		self.WIP_DV_CamMoveY = float(dict["DV_CamMoveY"]).__round__(5)
-		self.Editor_Background_FOV = float(dict["DV_Edit_Fovy"]).__round__(5)
-		self.Play_Background_FOV = float(dict["DV_Play_Fovy"]).__round__(5)
-		self.WIP_DV_ProjMoveY = float(dict["DV_ProjMoveY"]).__round__(5)
-		self.WIP_DV_ProjOffsetY = float(dict["DV_ProjOffsetY"]).__round__(5)
-		self.WIP_DV_ScalePivot = float(dict["DV_ScalePivot"]).__round__(5)
-		self.WIP_DV_V_CamMoveY = float(dict["DV_V_CamMoveY"]).__round__(5)
-		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(dict["DV_V_OffsetType"])
-		self.WIP_DV_V_ProjMoveY = float(dict["DV_V_ProjMoveY"]).__round__(5)
-		self.WIP_DV_V_ProjOffsetY = float(dict["DV_V_ProjOffsetY"]).__round__(5)
-		self.Background_Lighting = dict["Env_DV"]
-		self.Vertical_Background_Lighting = dict["Env_DV_V"]
-		self.Lighting = dict["Env_Model"]
-		self.Tileset_Model = dict["FieldModel"]
+		self.Background_Model = json["Background_Model"]
+		self.WIP_DV_CamMoveY = float(json["WIP_DV_CamMoveY"]).__round__(5)
+		self.Editor_Background_FOV = float(json["Editor_Background_FOV"]).__round__(5)
+		self.Play_Background_FOV = float(json["Play_Background_FOV"]).__round__(5)
+		self.WIP_DV_ProjMoveY = float(json["WIP_DV_ProjMoveY"]).__round__(5)
+		self.WIP_DV_ProjOffsetY = float(json["WIP_DV_ProjOffsetY"]).__round__(5)
+		self.WIP_DV_ScalePivot = float(json["WIP_DV_ScalePivot"]).__round__(5)
+		self.WIP_DV_V_CamMoveY = float(json["WIP_DV_V_CamMoveY"]).__round__(5)
+		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(json["Vertical_Background_Anchor_Type"])
+		self.WIP_DV_V_ProjMoveY = float(json["WIP_DV_V_ProjMoveY"]).__round__(5)
+		self.WIP_DV_V_ProjOffsetY = float(json["WIP_DV_V_ProjOffsetY"]).__round__(5)
+		self.Background_Lighting = json["Background_Lighting"]
+		self.Vertical_Background_Lighting = json["Vertical_Background_Lighting"]
+		self.Lighting = json["Lighting"]
+		self.Tileset_Model = json["Tileset_Model"]
 		self.Editor_Grid = [
-			float(dict["Grid_R"]).__round__(5),
-			float(dict["Grid_G"]).__round__(5),
-			float(dict["Grid_B"]).__round__(5),
-			float(dict["Grid_A"]).__round__(5),
+			float(json["Editor_Grid"][0]).__round__(5),
+			float(json["Editor_Grid"][1]).__round__(5),
+			float(json["Editor_Grid"][2]).__round__(5),
+			float(json["Editor_Grid"][3]).__round__(5),
 		]
+		THEMES[self.Style].append(self)
 		return self
-	def from_byml_dict(dict) -> Theme:
+	def from_byml_dict(byml: dict) -> Theme:
 		self = SM3DW_Theme()
-		self.Theme_Name = dict["FieldModel"][9:]
+		self.Theme_Name = byml["FieldModel"][9:]
 		self.CustomScroll_Inside = [
-			float(dict["CSin_R"]).__round__(5),
-			float(dict["CSin_G"]).__round__(5),
-			float(dict["CSin_B"]).__round__(5),
-			float(dict["CSin_A"]).__round__(5),
+			float(byml["CSin_R"]).__round__(5),
+			float(byml["CSin_G"]).__round__(5),
+			float(byml["CSin_B"]).__round__(5),
+			float(byml["CSin_A"]).__round__(5),
 		]
 		self.CustomScroll_Outside = [
-			float(dict["CSout_R"]).__round__(5),
-			float(dict["CSout_G"]).__round__(5),
-			float(dict["CSout_B"]).__round__(5),
-			float(dict["CSout_A"]).__round__(5),
+			float(byml["CSout_R"]).__round__(5),
+			float(byml["CSout_G"]).__round__(5),
+			float(byml["CSout_B"]).__round__(5),
+			float(byml["CSout_A"]).__round__(5),
 		]
-		self.Background_Model = dict["DVModel"]
-		self.WIP_DV_CamMoveY = float(dict["DV_CamMoveY"]).__round__(5)
-		self.Editor_Background_FOV = float(dict["DV_Edit_Fovy"]).__round__(5)
-		self.Play_Background_FOV = float(dict["DV_Play_Fovy"]).__round__(5)
-		self.WIP_DV_ProjMoveY = float(dict["DV_ProjMoveY"]).__round__(5)
-		self.WIP_DV_ProjOffsetY = float(dict["DV_ProjOffsetY"]).__round__(5)
-		self.WIP_DV_ScalePivot = float(dict["DV_ScalePivot"]).__round__(5)
-		self.WIP_DV_V_CamMoveY = float(dict["DV_V_CamMoveY"]).__round__(5)
-		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(dict["DV_V_OffsetType"])
-		self.WIP_DV_V_ProjMoveY = float(dict["DV_V_ProjMoveY"]).__round__(5)
-		self.WIP_DV_V_ProjOffsetY = float(dict["DV_V_ProjOffsetY"]).__round__(5)
-		self.Background_Lighting = dict["Env_DV"]
-		self.Vertical_Background_Lighting = dict["Env_DV_V"]
-		self.Lighting = dict["Env_Model"]
-		self.Tileset_Model = dict["FieldModel"]
+		self.Background_Model = byml["DVModel"]
+		self.WIP_DV_CamMoveY = float(byml["DV_CamMoveY"]).__round__(5)
+		self.Editor_Background_FOV = float(byml["DV_Edit_Fovy"]).__round__(5)
+		self.Play_Background_FOV = float(byml["DV_Play_Fovy"]).__round__(5)
+		self.WIP_DV_ProjMoveY = float(byml["DV_ProjMoveY"]).__round__(5)
+		self.WIP_DV_ProjOffsetY = float(byml["DV_ProjOffsetY"]).__round__(5)
+		self.WIP_DV_ScalePivot = float(byml["DV_ScalePivot"]).__round__(5)
+		self.WIP_DV_V_CamMoveY = float(byml["DV_V_CamMoveY"]).__round__(5)
+		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(byml["DV_V_OffsetType"])
+		self.WIP_DV_V_ProjMoveY = float(byml["DV_V_ProjMoveY"]).__round__(5)
+		self.WIP_DV_V_ProjOffsetY = float(byml["DV_V_ProjOffsetY"]).__round__(5)
+		self.Background_Lighting = byml["Env_DV"]
+		self.Vertical_Background_Lighting = byml["Env_DV_V"]
+		self.Lighting = byml["Env_Model"]
+		self.Tileset_Model = byml["FieldModel"]
 		self.Editor_Grid = [
-			float(dict["Grid_R"]).__round__(5),
-			float(dict["Grid_G"]).__round__(5),
-			float(dict["Grid_B"]).__round__(5),
-			float(dict["Grid_A"]).__round__(5),
+			float(byml["Grid_R"]).__round__(5),
+			float(byml["Grid_G"]).__round__(5),
+			float(byml["Grid_B"]).__round__(5),
+			float(byml["Grid_A"]).__round__(5),
 		]
+		THEMES[self.Style].append(self)
 		return self
 	def as_json_dict(self) -> dict:
 		return {
+			"Theme_Name": self.Theme_Name,
 			"CustomScroll_Inside": self.CustomScroll_Inside,
 			"CustomScroll_Outside": self.CustomScroll_Outside,
 			"Background_Model": self.Background_Model,
@@ -947,5 +875,101 @@ class SM3DW_Theme(Theme):
 			"Grid_A": oead.F32(self.Editor_Grid[3]),
 		}
 
-nonexistantfunction()
-	# SKY YOU GOTTA FIX THE JSON PARSING
+class MyWorld_Theme(Theme):
+	Style = GameStyle.MyWorld
+	Background_Model: str
+	Tileset_Model: str
+	Editor_Grid: list[float] # Vec4
+	WIP_Mask: list[float] # Vec5
+	WIP_NothingAreaAttr: str
+	WIP_RoadModel: str
+
+	def print(self):
+		print(self.Style.name+": "+self.Theme_Name+"\n"+
+			"> Background_Model:			"+str(self.Background_Model)+"\n"+
+			"> Tileset_Model:			"+str(self.Tileset_Model)+"\n"+
+			"> Editor_Grid:				"+str(self.Editor_Grid)+"\n"+
+			"> WIP_Mask:				"+str(self.WIP_Mask)+"\n"+
+			"> WIP_NothingAreaAttr:			"+str(self.WIP_NothingAreaAttr)+"\n"+
+			"> WIP_RoadModel:			"+str(self.WIP_RoadModel)+"\n"
+		)
+	def from_json_dict(json: dict) -> Theme:
+		self = MyWorld_Theme()
+		self.Theme_Name = json["Theme_Name"]
+		self.Background_Model = json["Background_Model"]
+		self.Tileset_Model = json["Tileset_Model"]
+		self.Editor_Grid = [
+			float(json["Editor_Grid"][0]).__round__(5),
+			float(json["Editor_Grid"][1]).__round__(5),
+			float(json["Editor_Grid"][2]).__round__(5),
+			float(json["Editor_Grid"][3]).__round__(5),
+		]
+		self.WIP_Mask = [
+			float(json["WIP_Mask"][0]).__round__(5),
+			float(json["WIP_Mask"][1]).__round__(5),
+			float(json["WIP_Mask"][2]).__round__(5),
+			float(json["WIP_Mask"][3]).__round__(5),
+			float(json["WIP_Mask"][4]).__round__(5),
+		]
+		self.WIP_NothingAreaAttr = json["WIP_NothingAreaAttr"]
+		self.WIP_RoadModel = json["WIP_RoadModel"]
+		THEMES[self.Style].append(self)
+		return self
+	def from_byml_dict(byml: dict) -> Theme:
+		self = MyWorld_Theme()
+		self.Theme_Name = byml["FieldModel"][14:]
+		self.Background_Model = byml["DVModel"]
+		self.Tileset_Model = byml["FieldModel"]
+		self.Editor_Grid = [
+			float(byml["Grid_R"]).__round__(5),
+			float(byml["Grid_G"]).__round__(5),
+			float(byml["Grid_B"]).__round__(5),
+			float(byml["Grid_A"]).__round__(5),
+		]
+		self.WIP_Mask = [
+			float(byml["Mask_R"]).__round__(5),
+			float(byml["Mask_G"]).__round__(5),
+			float(byml["Mask_B"]).__round__(5),
+			float(byml["Mask_A0"]).__round__(5),
+			float(byml["Mask_A1"]).__round__(5),
+		]
+		self.WIP_NothingAreaAttr = byml["NothingAreaAttr"]
+		self.WIP_RoadModel = byml["RoadModel"]
+		THEMES[self.Style].append(self)
+		return self
+	def as_json_dict(self) -> dict:
+		return {
+			"Theme_Name": self.Theme_Name,
+			"Background_Model": self.Background_Model,
+			"Tileset_Model": self.Tileset_Model,
+			"Editor_Grid": self.Editor_Grid,
+			"WIP_Mask": self.WIP_Mask,
+			"WIP_NothingAreaAttr": self.WIP_NothingAreaAttr,
+			"WIP_RoadModel": self.WIP_RoadModel,
+		}
+	def as_byml_dict(self) -> dict:
+		return {
+			"DVModel": self.Background_Model,
+			"FieldModel": self.Tileset_Model,
+			"Grid_R": oead.F32(self.Editor_Grid[0]),
+			"Grid_G": oead.F32(self.Editor_Grid[1]),
+			"Grid_B": oead.F32(self.Editor_Grid[2]),
+			"Grid_A": oead.F32(self.Editor_Grid[3]),
+			"Mask_R": oead.F32(self.WIP_Mask[0]),
+			"Mask_G": oead.F32(self.WIP_Mask[1]),
+			"Mask_B": oead.F32(self.WIP_Mask[2]),
+			"Mask_A0": oead.F32(self.WIP_Mask[3]),
+			"Mask_A1": oead.F32(self.WIP_Mask[4]),
+			"NothingAreaAttr": self.WIP_NothingAreaAttr,
+			"RoadModel": self.WIP_RoadModel,
+		}
+
+
+THEMES: dict[GameStyle, list[Theme]] = {
+	GameStyle.SMB1: [],
+	GameStyle.SMB3: [],
+	GameStyle.SMW: [],
+	GameStyle.NSMBU: [],
+	GameStyle.SM3DW: [],
+	GameStyle.MyWorld: [],
+}
