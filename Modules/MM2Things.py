@@ -3,12 +3,12 @@ from enum import Enum
 
 # Enums
 class GameStyle(Enum):
-	SMB1	= 'M1_SceneDB'
-	SMB3	= 'M3_SceneDB'
-	SMW		= 'MW_SceneDB'
-	NSMBU	= 'WU_SceneDB'
-	SM3DW	= '3W_SceneDB'
-	MyWorld	= 'SceneDB_MyWorld'
+	SMB1	= 'M1', 'M1_SceneDB'
+	SMB3	= 'M3', 'M3_SceneDB'
+	SMW		= 'MW', 'MW_SceneDB'
+	NSMBU	= 'WU', 'WU_SceneDB'
+	SM3DW	= '3W', '3W_SceneDB'
+	MyWorld	= 'MyWorld', 'SceneDB_MyWorld'
 
 class Vertical_Background_Anchor_Enum(Enum):
 	Top		= '上基準'
@@ -18,6 +18,7 @@ class Vertical_Background_Anchor_Enum(Enum):
 class Theme():
 	Style: GameStyle
 	Theme_Name: str
+	Is_Night: bool = False
 	def print(self):
 		pass
 	def from_json_dict(json: dict):
@@ -101,6 +102,9 @@ class SMB1_Theme(Theme):
 	def from_byml_dict(byml: dict) -> Theme:
 		self = SMB1_Theme()
 		self.Theme_Name = byml["FieldModel"][9:]
+		if (self.Theme_Name[-2:] == "_D"):
+			self.Theme_Name = self.Theme_Name[:-2]
+			self.Is_Night = True
 		self.CustomScroll_Inside = [
 			float(byml["CSin_R"]).__round__(5),
 			float(byml["CSin_G"]).__round__(5),
@@ -253,6 +257,9 @@ class SMB3_Theme(Theme):
 	def from_byml_dict(byml: dict) -> Theme:
 		self = SMB3_Theme()
 		self.Theme_Name = byml["FieldModel"][9:]
+		if (self.Theme_Name[-2:] == "_D"):
+			self.Theme_Name = self.Theme_Name[:-2]
+			self.Is_Night = True
 		self.CustomScroll_Inside = [
 			float(byml["CSin_R"]).__round__(5),
 			float(byml["CSin_G"]).__round__(5),
@@ -405,6 +412,9 @@ class SMW_Theme(Theme):
 	def from_byml_dict(byml: dict) -> Theme:
 		self = SMW_Theme()
 		self.Theme_Name = byml["FieldModel"][9:]
+		if (self.Theme_Name[-2:] == "_D"):
+			self.Theme_Name = self.Theme_Name[:-2]
+			self.Is_Night = True
 		self.CustomScroll_Inside = [
 			float(byml["CSin_R"]).__round__(5),
 			float(byml["CSin_G"]).__round__(5),
@@ -586,6 +596,9 @@ class NSMBU_Theme(Theme):
 	def from_byml_dict(byml: dict) -> Theme:
 		self = NSMBU_Theme()
 		self.Theme_Name = byml["FieldModel"][9:]
+		if (self.Theme_Name[-2:] == "_D"):
+			self.Theme_Name = self.Theme_Name[:-2]
+			self.Is_Night = True
 		self.CustomScroll_Inside = [
 			float(byml["CSin_R"]).__round__(5),
 			float(byml["CSin_G"]).__round__(5),
@@ -778,6 +791,9 @@ class SM3DW_Theme(Theme):
 	def from_byml_dict(byml: dict) -> Theme:
 		self = SM3DW_Theme()
 		self.Theme_Name = byml["FieldModel"][9:]
+		if (self.Theme_Name[-2:] == "_D"):
+			self.Theme_Name = self.Theme_Name[:-2]
+			self.Is_Night = True
 		self.CustomScroll_Inside = [
 			float(byml["CSin_R"]).__round__(5),
 			float(byml["CSin_G"]).__round__(5),

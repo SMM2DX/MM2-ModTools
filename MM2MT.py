@@ -11,7 +11,7 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QToolBar, QMenu, QStatus
 )
 
 
-DIRECTORY = os.path.dirname(__file__)+"/"
+DIRECTORY = f"{os.path.dirname(__file__)}/"
 if not os.path.exists(f"{DIRECTORY}BYML-Input/"):
 	os.makedirs(f"{DIRECTORY}BYML-Input/")
 if not os.path.exists(f"{DIRECTORY}MM2Theme-Input/"):
@@ -24,12 +24,14 @@ def CompileThemes(window):
 	for style in GameStyle:
 		byml_array = []
 		for i in range(window.themeLists[style].count()): # This feels super janky but it works !
-			theme = window.themeLists[style].item(i).data(100)
-			byml_array.append(theme.as_byml_dict())
+			themes = window.themeLists[style].item(i).data(100)
+			for theme in themes:
+				if theme: byml_array.append(theme.as_byml_dict())
+		# TODO: THIS FUCKING BLOWS HOLY SHIT ITS SO UGLY
 		
-		with open(f"{DIRECTORY}BYML-Output/{style.value}.yaml", "wt") as file:
+		with open(f"{DIRECTORY}BYML-Output/{style.value[1]}.yaml", "wt") as file:
 			file.write(oead.byml.to_text(byml_array)) # Write yaml for sanity checking
-		with open(f"{DIRECTORY}BYML-Output/{style.value}.byml", "wb") as file:
+		with open(f"{DIRECTORY}BYML-Output/{style.value[1]}.byml", "wb") as file:
 			file.write(oead.byml.to_binary(byml_array, False, 1))
 
 def DecompileThemes(window): # Technically this could auto-load themes but that felt weird
@@ -40,21 +42,25 @@ def DecompileThemes(window): # Technically this could auto-load themes but that 
 	
 	for fileName in os.listdir(f"{DIRECTORY}BYML-Input/"):
 		if not fileName.upper().endswith(".BYML"): continue
-		with open(f"{DIRECTORY}BYML-Input/"+fileName, "rb") as bymlFile:
+		with open(f"{DIRECTORY}BYML-Input/{fileName}", "rb") as bymlFile:
 			for theme_dict in oead.byml.from_binary(bymlFile.read()):
 				theme: Theme = None
-				if (GameStyle.SMB1.value in fileName): theme = SMB1_Theme.from_byml_dict(theme_dict)
-				elif (GameStyle.SMB3.value in fileName): theme = SMB3_Theme.from_byml_dict(theme_dict)
-				elif (GameStyle.SMW.value in fileName): theme = SMW_Theme.from_byml_dict(theme_dict)
-				elif (GameStyle.NSMBU.value in fileName): theme = NSMBU_Theme.from_byml_dict(theme_dict)
-				elif (GameStyle.SM3DW.value in fileName): theme = SM3DW_Theme.from_byml_dict(theme_dict)
-				elif (GameStyle.MyWorld.value in fileName): theme = MyWorld_Theme.from_byml_dict(theme_dict)
+				if (GameStyle.SMB1.value[1] in fileName): theme = SMB1_Theme.from_byml_dict(theme_dict)
+				elif (GameStyle.SMB3.value[1] in fileName): theme = SMB3_Theme.from_byml_dict(theme_dict)
+				elif (GameStyle.SMW.value[1] in fileName): theme = SMW_Theme.from_byml_dict(theme_dict)
+				elif (GameStyle.NSMBU.value[1] in fileName): theme = NSMBU_Theme.from_byml_dict(theme_dict)
+				elif (GameStyle.SM3DW.value[1] in fileName): theme = SM3DW_Theme.from_byml_dict(theme_dict)
+				elif (GameStyle.MyWorld.value[1] in fileName): theme = MyWorld_Theme.from_byml_dict(theme_dict)
 				else:
 					QMessageBox.warning(window, "Invalid File", f"Encountered file {fileName} with invalid Gamestyle, skipping")
 					break
 				
-				with open(f"{DIRECTORY}MM2Theme-Output/"+theme.Theme_Name+"."+theme.Style.value+".MM2Theme", "wt") as jsonFile:
-					json.dump(theme.as_json_dict(), jsonFile)
+				if (not theme.Is_Night):
+					with open(f"{DIRECTORY}MM2Theme-Output/{theme.Theme_Name}.{theme.Style.value[0]}.MM2Theme", "wt") as jsonFile:
+						json.dump(theme.as_json_dict(), jsonFile)
+				else:
+					with open(f"{DIRECTORY}MM2Theme-Output/{theme.Theme_Name}.{theme.Style.value[0]}.Night.MM2Theme", "wt") as jsonFile:
+						json.dump(theme.as_json_dict(), jsonFile)
 
 def LoadThemes(window):
 	if not os.path.exists(f"{DIRECTORY}MM2Theme-Input/"):
@@ -62,20 +68,51 @@ def LoadThemes(window):
 	
 	for fileName in os.listdir(f"{DIRECTORY}MM2Theme-Input/"):
 		if not fileName.upper().endswith(".MM2THEME"): continue
-		with open(f"{DIRECTORY}MM2Theme-Input/"+fileName, "rb") as jsonFile:
-			theme_dict = json.load(jsonFile)
+		if fileName.upper().endswith(".NIGHT.MM2THEME"): continue
+		with open(f"{DIRECTORY}MM2Theme-Input/{fileName}", "rb") as jsonFile:
 			theme: Theme = None
-			if (fileName.upper().endswith(".M1.MM2THEME")): theme = SMB1_Theme.from_json_dict(theme_dict)
-			elif (fileName.upper().endswith(".M3.MM2THEME")): theme = SMB3_Theme.from_json_dict(theme_dict)
-			elif (fileName.upper().endswith(".MW.MM2THEME")): theme = SMW_Theme.from_json_dict(theme_dict)
-			elif (fileName.upper().endswith(".WU.MM2THEME")): theme = NSMBU_Theme.from_json_dict(theme_dict)
-			elif (fileName.upper().endswith(".3W.MM2THEME")): theme = SM3DW_Theme.from_json_dict(theme_dict)
-			elif (fileName.upper().endswith(".MYWORLD.MM2THEME")): theme = MyWorld_Theme.from_json_dict(theme_dict)
-			else: QMessageBox.warning(window, "Invalid File", f"Encountered file {fileName} with invalid Gamestyle, skipping")
+			theme_night: Theme = None
+			if (fileName.upper().endswith(".M1.MM2THEME")):
+				theme = SMB1_Theme.from_json_dict(json.load(jsonFile))
+				if (os.path.exists(f"{DIRECTORY}MM2Theme-Input/{fileName[:-8]}Night.MM2Theme")):
+					with open(f"{DIRECTORY}MM2Theme-Input/{fileName[:-8]}Night.MM2Theme", "rb") as nightFile:
+						theme_night = SMB1_Theme.from_json_dict(json.load(nightFile))
+			elif (fileName.upper().endswith(".M3.MM2THEME")):
+				theme = SMB3_Theme.from_json_dict(json.load(jsonFile))
+				if (os.path.exists(f"{DIRECTORY}MM2Theme-Input/{fileName[:-8]}Night.MM2Theme")):
+					with open(f"{DIRECTORY}MM2Theme-Input/{fileName[:-8]}Night.MM2Theme", "rb") as nightFile:
+						theme_night = SMB3_Theme.from_json_dict(json.load(nightFile))
+			elif (fileName.upper().endswith(".MW.MM2THEME")):
+				theme = SMW_Theme.from_json_dict(json.load(jsonFile))
+				if (os.path.exists(f"{DIRECTORY}MM2Theme-Input/{fileName[:-8]}Night.MM2Theme")):
+					with open(f"{DIRECTORY}MM2Theme-Input/{fileName[:-8]}Night.MM2Theme", "rb") as nightFile:
+						theme_night = SMW_Theme.from_json_dict(json.load(nightFile))
+			elif (fileName.upper().endswith(".WU.MM2THEME")):
+				theme = NSMBU_Theme.from_json_dict(json.load(jsonFile))
+				if (os.path.exists(f"{DIRECTORY}MM2Theme-Input/{fileName[:-8]}Night.MM2Theme")):
+					with open(f"{DIRECTORY}MM2Theme-Input/{fileName[:-8]}Night.MM2Theme", "rb") as nightFile:
+						theme_night = NSMBU_Theme.from_json_dict(json.load(nightFile))
+			elif (fileName.upper().endswith(".3W.MM2THEME")):
+				theme = SM3DW_Theme.from_json_dict(json.load(jsonFile))
+				if (os.path.exists(f"{DIRECTORY}MM2Theme-Input/{fileName[:-8]}Night.MM2Theme")):
+					with open(f"{DIRECTORY}MM2Theme-Input/{fileName[:-8]}Night.MM2Theme", "rb") as nightFile:
+						theme_night = SM3DW_Theme.from_json_dict(json.load(nightFile))
+			elif (fileName.upper().endswith(".MYWORLD.MM2THEME")):
+				theme = MyWorld_Theme.from_json_dict(json.load(jsonFile))
+				if (os.path.exists(f"{DIRECTORY}MM2Theme-Input/{fileName[:-8]}Night.MM2Theme")):
+					with open(f"{DIRECTORY}MM2Theme-Input/{fileName[:-8]}Night.MM2Theme", "rb") as nightFile:
+						theme_night = MyWorld_Theme.from_json_dict(json.load(nightFile))
+			else:
+				QMessageBox.warning(window, "Invalid File", f"Encountered file {fileName} with invalid Gamestyle, skipping")
+				continue
 
 			listItem = QListWidgetItem()
-			listItem.setText(theme.Theme_Name)
-			listItem.setData(100, theme) # No idea if this is how you're supposed to do it, but its working so.
+			if (theme_night):
+				listItem.setText(f"{theme.Theme_Name} + Night")
+			else:
+				listItem.setText(theme.Theme_Name)
+			listItem.setData(100, (theme, theme_night)) # No idea if this is how you're supposed to do it, but its working so.
+			# TODO: THIS FUCKING BLOWS HOLY SHIT ITS SO UGLY
 			window.themeLists[theme.Style].addItem(listItem)
 
 class MainWindow(QMainWindow):
@@ -178,7 +215,7 @@ class MainWindow(QMainWindow):
 				tabsWidget.setTabPosition(QTabWidget.TabPosition.East)
 				tabsWidget.setDocumentMode(True)
 				tabsWidget.setMovable(True)
-				self.themeLists: dict[GameStyle, QListWidget] = {}
+				self.themeLists: dict[GameStyle, QListWidget] = {} # TODO: This probably needs to be far more hardcoded and use a subclassed QListWidgetItem class
 				for style in GameStyle:
 					self.themeLists[style] = QListWidget()
 					self.themeLists[style].setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
