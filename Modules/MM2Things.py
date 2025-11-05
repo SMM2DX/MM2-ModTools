@@ -3,12 +3,12 @@ from enum import Enum
 
 # Enums
 class GameStyle(Enum):
-	SMB1	= 'M1'
-	SMB3	= 'M3'
-	SMW		= 'MW'
-	NSMBU	= 'WU'
-	SM3DW	= '3W'
-	MyWorld	= 'MyWorld'
+	SMB1	= 'M1_SceneDB'
+	SMB3	= 'M3_SceneDB'
+	SMW		= 'MW_SceneDB'
+	NSMBU	= 'WU_SceneDB'
+	SM3DW	= '3W_SceneDB'
+	MyWorld	= 'SceneDB_MyWorld'
 
 class Vertical_Background_Anchor_Enum(Enum):
 	Top		= '上基準'
@@ -77,7 +77,7 @@ class SMB1_Theme(Theme):
 			float(json["CustomScroll_Outside"][3]).__round__(5),
 		]
 		self.Background_Model = json["Background_Model"]
-		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(json["Vertical_Background_Anchor_Type"])
+		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum[json["Vertical_Background_Anchor_Type"]]
 		self.Enemy_Variant = json["Enemy_Variant"]
 		self.Background_Lighting = json["Background_Lighting"]
 		self.Vertical_Background_Lighting = json["Vertical_Background_Lighting"]
@@ -97,7 +97,6 @@ class SMB1_Theme(Theme):
 			float(json["Shadow_Color"][3]).__round__(5),
 		]
 		self.Shadow_Offset = float(json["Shadow_Offset"]).__round__(5)
-		THEMES[self.Style].append(self)
 		return self
 	def from_byml_dict(byml: dict) -> Theme:
 		self = SMB1_Theme()
@@ -135,7 +134,6 @@ class SMB1_Theme(Theme):
 			float(byml["Shadow_A"]).__round__(5),
 		]
 		self.Shadow_Offset = float(byml["Shadow_Offset"]).__round__(5)
-		THEMES[self.Style].append(self)
 		return self
 	def as_json_dict(self) -> dict:
 		return {
@@ -231,7 +229,7 @@ class SMB3_Theme(Theme):
 			float(json["CustomScroll_Outside"][3]).__round__(5),
 		]
 		self.Background_Model = json["Background_Model"]
-		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(json["Vertical_Background_Anchor_Type"])
+		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum[json["Vertical_Background_Anchor_Type"]]
 		self.Enemy_Variant = json["Enemy_Variant"]
 		self.Background_Lighting = json["Background_Lighting"]
 		self.Vertical_Background_Lighting = json["Vertical_Background_Lighting"]
@@ -251,7 +249,6 @@ class SMB3_Theme(Theme):
 			float(json["Shadow_Color"][3]).__round__(5),
 		]
 		self.Shadow_Offset = float(json["Shadow_Offset"]).__round__(5)
-		THEMES[self.Style].append(self)
 		return self
 	def from_byml_dict(byml: dict) -> Theme:
 		self = SMB3_Theme()
@@ -289,7 +286,6 @@ class SMB3_Theme(Theme):
 			float(byml["Shadow_A"]).__round__(5),
 		]
 		self.Shadow_Offset = float(byml["Shadow_Offset"]).__round__(5)
-		THEMES[self.Style].append(self)
 		return self
 	def as_json_dict(self) -> dict:
 		return {
@@ -385,7 +381,7 @@ class SMW_Theme(Theme):
 			float(json["CustomScroll_Outside"][3]).__round__(5),
 		]
 		self.Background_Model = json["Background_Model"]
-		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(json["Vertical_Background_Anchor_Type"])
+		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum[json["Vertical_Background_Anchor_Type"]]
 		self.Enemy_Variant = json["Enemy_Variant"]
 		self.Background_Lighting = json["Background_Lighting"]
 		self.Vertical_Background_Lighting = json["Vertical_Background_Lighting"]
@@ -405,7 +401,6 @@ class SMW_Theme(Theme):
 			float(json["Shadow_Color"][3]).__round__(5),
 		]
 		self.Shadow_Offset = float(json["Shadow_Offset"]).__round__(5)
-		THEMES[self.Style].append(self)
 		return self
 	def from_byml_dict(byml: dict) -> Theme:
 		self = SMW_Theme()
@@ -443,7 +438,6 @@ class SMW_Theme(Theme):
 			float(byml["Shadow_A"]).__round__(5),
 		]
 		self.Shadow_Offset = float(byml["Shadow_Offset"]).__round__(5)
-		THEMES[self.Style].append(self)
 		return self
 	def as_json_dict(self) -> dict:
 		return {
@@ -560,7 +554,7 @@ class NSMBU_Theme(Theme):
 		self.WIP_DV_ProjMoveY = float(json["WIP_DV_ProjMoveY"]).__round__(5)
 		self.WIP_DV_ProjOffsetY = float(json["WIP_DV_ProjOffsetY"]).__round__(5)
 		self.WIP_DV_V_CamMoveY = float(json["WIP_DV_V_CamMoveY"]).__round__(5)
-		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(json["Vertical_Background_Anchor_Type"])
+		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum[json["Vertical_Background_Anchor_Type"]]
 		self.WIP_DV_V_ProjMoveY = float(json["WIP_DV_V_ProjMoveY"]).__round__(5)
 		self.WIP_DV_V_ProjOffsetY = float(json["WIP_DV_V_ProjOffsetY"]).__round__(5)
 		self.Vertical_Background_Position = [
@@ -588,7 +582,6 @@ class NSMBU_Theme(Theme):
 			float(json["Editor_Grid"][2]).__round__(5),
 			float(json["Editor_Grid"][3]).__round__(5),
 		]
-		THEMES[self.Style].append(self)
 		return self
 	def from_byml_dict(byml: dict) -> Theme:
 		self = NSMBU_Theme()
@@ -639,7 +632,6 @@ class NSMBU_Theme(Theme):
 			float(byml["Grid_B"]).__round__(5),
 			float(byml["Grid_A"]).__round__(5),
 		]
-		THEMES[self.Style].append(self)
 		return self
 	def as_json_dict(self) -> dict:
 		return {
@@ -769,7 +761,7 @@ class SM3DW_Theme(Theme):
 		self.WIP_DV_ProjOffsetY = float(json["WIP_DV_ProjOffsetY"]).__round__(5)
 		self.WIP_DV_ScalePivot = float(json["WIP_DV_ScalePivot"]).__round__(5)
 		self.WIP_DV_V_CamMoveY = float(json["WIP_DV_V_CamMoveY"]).__round__(5)
-		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum(json["Vertical_Background_Anchor_Type"])
+		self.Vertical_Background_Anchor_Type = Vertical_Background_Anchor_Enum[json["Vertical_Background_Anchor_Type"]]
 		self.WIP_DV_V_ProjMoveY = float(json["WIP_DV_V_ProjMoveY"]).__round__(5)
 		self.WIP_DV_V_ProjOffsetY = float(json["WIP_DV_V_ProjOffsetY"]).__round__(5)
 		self.Background_Lighting = json["Background_Lighting"]
@@ -782,7 +774,6 @@ class SM3DW_Theme(Theme):
 			float(json["Editor_Grid"][2]).__round__(5),
 			float(json["Editor_Grid"][3]).__round__(5),
 		]
-		THEMES[self.Style].append(self)
 		return self
 	def from_byml_dict(byml: dict) -> Theme:
 		self = SM3DW_Theme()
@@ -820,7 +811,6 @@ class SM3DW_Theme(Theme):
 			float(byml["Grid_B"]).__round__(5),
 			float(byml["Grid_A"]).__round__(5),
 		]
-		THEMES[self.Style].append(self)
 		return self
 	def as_json_dict(self) -> dict:
 		return {
@@ -913,7 +903,6 @@ class MyWorld_Theme(Theme):
 		]
 		self.WIP_NothingAreaAttr = json["WIP_NothingAreaAttr"]
 		self.WIP_RoadModel = json["WIP_RoadModel"]
-		THEMES[self.Style].append(self)
 		return self
 	def from_byml_dict(byml: dict) -> Theme:
 		self = MyWorld_Theme()
@@ -935,7 +924,6 @@ class MyWorld_Theme(Theme):
 		]
 		self.WIP_NothingAreaAttr = byml["NothingAreaAttr"]
 		self.WIP_RoadModel = byml["RoadModel"]
-		THEMES[self.Style].append(self)
 		return self
 	def as_json_dict(self) -> dict:
 		return {
@@ -964,12 +952,3 @@ class MyWorld_Theme(Theme):
 			"RoadModel": self.WIP_RoadModel,
 		}
 
-
-THEMES: dict[GameStyle, list[Theme]] = {
-	GameStyle.SMB1: [],
-	GameStyle.SMB3: [],
-	GameStyle.SMW: [],
-	GameStyle.NSMBU: [],
-	GameStyle.SM3DW: [],
-	GameStyle.MyWorld: [],
-}
