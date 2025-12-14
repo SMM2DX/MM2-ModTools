@@ -3,12 +3,14 @@ import sys
 import json
 import oead
 from Modules.MM2Things import Theme, GameStyle, SMB1_Theme, SMB3_Theme, SMW_Theme, NSMBU_Theme, SM3DW_Theme, MyWorld_Theme
+from Modules.QtThings import QActionButton
 from PyQt6.QtCore import Qt, QDir, QSettings, QByteArray, QSize
 from PyQt6.QtGui import QAction, QIcon, QKeySequence, QPixmap
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QToolBar, QMenu, QStatusBar, QMessageBox, QWidget,
-	QTabWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QFileDialog, 
+	QTabWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QFileDialog, 
 	QAbstractItemView, QListWidget, QListView, QListWidgetItem
 )
+from zstd import ZSTD_uncompress
 
 app = QApplication(sys.argv)
 app.setOrganizationName("SMM2DX")
@@ -16,161 +18,197 @@ app.setApplicationName("MM2MT")
 app.setApplicationDisplayName
 
 settings = QSettings()
-CLEANROMFSDIR: QDir = QDir(settings.value("romfsDir", QDir.rootPath()))
-if not QDir.current().exists("BYML-Input"): QDir.current().mkdir("BYML-Input")
-if not QDir.current().exists("BYML-Output"): QDir.current().mkdir("BYML-Output")
-if not QDir.current().exists("MM2Theme-Input"): QDir.current().mkdir("MM2Theme-Input")
-if not QDir.current().exists("MM2Theme-Output"): QDir.current().mkdir("MM2Theme-Output")
+CLEANROMFSDIR: QDir = QDir(settings.value("RomFSDir", QDir.rootPath()))
+QDir.current().mkpath("Input/BYML")
+QDir.current().mkpath("Input/MM2Theme")
+QDir.current().mkpath("Output/BYML")
+QDir.current().mkpath("Output/MM2Theme")
+QDir.current().mkpath("Output/RomFS")
 
-def CompileThemes(window):
-	outputDir: QDir = QDir().current()
-	if not outputDir.exists("BYML-Output"): outputDir.mkdir("BYML-Output")
-	outputDir.cd("BYML-Output")
-	
-	for style in GameStyle:
-		byml_array = []
-		for i in range(window.themeLists[style].count()): # This feels super janky but it works !
-			themes = window.themeLists[style].item(i).data(100)
-			for theme in themes:
-				if theme: byml_array.append(theme.as_byml_dict())
-		# TODO: THIS FUCKING BLOWS HOLY SHIT ITS SO UGLY
-		
-		with open(outputDir.filePath(f"{style.value[1]}.yaml"), "wt") as file:
-			file.write(oead.byml.to_text(byml_array)) # Write yaml for sanity checking
-		with open(outputDir.filePath(f"{style.value[1]}.byml"), "wb") as file:
-			file.write(oead.byml.to_binary(byml_array, False, 1))
-
-def DecompileThemes(window): # Technically this could auto-load themes but that felt weird
+def ThemesLoad(window):
+	QDir.current().mkpath("Input/MM2Theme")
 	inputDir: QDir = QDir().current()
-	if not inputDir.exists("BYML-Input"): inputDir.mkdir("BYML-Input")
-	inputDir.cd("BYML-Input")
-	outputDir: QDir = QDir().current()
-	if not outputDir.exists("MM2Theme-Output"): outputDir.mkdir("MM2Theme-Output")
-	outputDir.cd("MM2Theme-Output")
+	inputDir.cd("Input/MM2Theme")
 	
 	for fileName in os.listdir(inputDir.path()):
-		if not fileName.upper().endswith(".BYML"): continue
-		with open(inputDir.filePath(f"{fileName}"), "rb") as bymlFile:
-			for theme_dict in oead.byml.from_binary(bymlFile.read()):
-				theme: Theme = None
-				if (GameStyle.SMB1.value[1] in fileName): theme = SMB1_Theme.from_byml_dict(theme_dict)
-				elif (GameStyle.SMB3.value[1] in fileName): theme = SMB3_Theme.from_byml_dict(theme_dict)
-				elif (GameStyle.SMW.value[1] in fileName): theme = SMW_Theme.from_byml_dict(theme_dict)
-				elif (GameStyle.NSMBU.value[1] in fileName): theme = NSMBU_Theme.from_byml_dict(theme_dict)
-				elif (GameStyle.SM3DW.value[1] in fileName): theme = SM3DW_Theme.from_byml_dict(theme_dict)
-				elif (GameStyle.MyWorld.value[1] in fileName): theme = MyWorld_Theme.from_byml_dict(theme_dict)
-				else:
-					QMessageBox.warning(window, "Invalid File", f"Encountered file {fileName} with invalid Gamestyle, skipping")
-					break
-				
-				if (not theme.Is_Night):
+		if not fileName.upper().endswith(".MM2THEME"): continue
+		with open(inputDir.filePath(f"{fileName}"), "rb") as jsonFile:
+			theme: Theme = None
+			if   (     ".M1." in fileName.upper()): theme =    SMB1_Theme.from_json_dict(json.load(jsonFile))
+			elif (     ".M3." in fileName.upper()): theme =    SMB3_Theme.from_json_dict(json.load(jsonFile))
+			elif (     ".MW." in fileName.upper()): theme =     SMW_Theme.from_json_dict(json.load(jsonFile))
+			elif (     ".WU." in fileName.upper()): theme =   NSMBU_Theme.from_json_dict(json.load(jsonFile))
+			elif (     ".3W." in fileName.upper()): theme =   SM3DW_Theme.from_json_dict(json.load(jsonFile))
+			elif (".MYWORLD." in fileName.upper()): theme = MyWorld_Theme.from_json_dict(json.load(jsonFile))
+			else:
+				QMessageBox.warning(window, "Invalid File", f"Encountered file {fileName} with invalid Gamestyle, skipping")
+				continue
+
+			listItem = QListWidgetItem()
+			if (theme.Is_Night):
+				listItem.setText(f"{theme.Theme_Name} (Night)")
+			else:
+				listItem.setText(theme.Theme_Name)
+			# TODO: THIS FUCKING BLOWS HOLY SHIT ITS SO UGLY
+			listItem.setData(100, (theme, None)) # No idea if this is how you're supposed to do it, but its working so.
+			window.themeLists[theme.Style].addItem(listItem)
+
+def ThemesSave(window):
+	QDir.current().mkpath("Output/MM2Theme")
+	outputDir: QDir = QDir().current()
+	outputDir.cd("Output/MM2Theme")
+
+	for style in GameStyle:
+		for i in range(window.themeLists[style].count()): # WARN: This feels super janky but it works !
+			themes = window.themeLists[style].item(i).data(100)
+			for theme in themes:
+				if not theme: continue
+				if not theme.Is_Night:
 					with open(outputDir.filePath(f"{theme.Theme_Name}.{theme.Style.value[0]}.MM2Theme"), "wt") as jsonFile:
 						json.dump(theme.as_json_dict(), jsonFile)
 				else:
 					with open(outputDir.filePath(f"{theme.Theme_Name}.{theme.Style.value[0]}.Night.MM2Theme"), "wt") as jsonFile:
 						json.dump(theme.as_json_dict(), jsonFile)
 
-def LoadThemes(window):
+def ThemesDecompile(window):
+	QDir.current().mkpath("Input/BYML")
 	inputDir: QDir = QDir().current()
-	if not inputDir.exists("MM2Theme-Input"): inputDir.mkdir("MM2Theme-Input")
-	inputDir.cd("MM2Theme-Input")
+	inputDir.cd("Input/BYML")
 	
 	for fileName in os.listdir(inputDir.path()):
-		if not fileName.upper().endswith(".MM2THEME"): continue
-		if fileName.upper().endswith(".NIGHT.MM2THEME"): continue
-		with open(inputDir.filePath(f"{fileName}"), "rb") as jsonFile:
-			theme: Theme = None
-			theme_night: Theme = None
-			if (fileName.upper().endswith(".M1.MM2THEME")):
-				theme = SMB1_Theme.from_json_dict(json.load(jsonFile))
-				if (os.path.exists(inputDir.filePath(f"{fileName[:-8]}Night.MM2Theme"))):
-					with open(inputDir.filePath(f"{fileName[:-8]}Night.MM2Theme"), "rb") as nightFile:
-						theme_night = SMB1_Theme.from_json_dict(json.load(nightFile))
-			elif (fileName.upper().endswith(".M3.MM2THEME")):
-				theme = SMB3_Theme.from_json_dict(json.load(jsonFile))
-				if (os.path.exists(inputDir.filePath(f"{fileName[:-8]}Night.MM2Theme"))):
-					with open(inputDir.filePath(f"{fileName[:-8]}Night.MM2Theme"), "rb") as nightFile:
-						theme_night = SMB3_Theme.from_json_dict(json.load(nightFile))
-			elif (fileName.upper().endswith(".MW.MM2THEME")):
-				theme = SMW_Theme.from_json_dict(json.load(jsonFile))
-				if (os.path.exists(inputDir.filePath(f"{fileName[:-8]}Night.MM2Theme"))):
-					with open(inputDir.filePath(f"{fileName[:-8]}Night.MM2Theme"), "rb") as nightFile:
-						theme_night = SMW_Theme.from_json_dict(json.load(nightFile))
-			elif (fileName.upper().endswith(".WU.MM2THEME")):
-				theme = NSMBU_Theme.from_json_dict(json.load(jsonFile))
-				if (os.path.exists(inputDir.filePath(f"{fileName[:-8]}Night.MM2Theme"))):
-					with open(inputDir.filePath(f"{fileName[:-8]}Night.MM2Theme"), "rb") as nightFile:
-						theme_night = NSMBU_Theme.from_json_dict(json.load(nightFile))
-			elif (fileName.upper().endswith(".3W.MM2THEME")):
-				theme = SM3DW_Theme.from_json_dict(json.load(jsonFile))
-				if (os.path.exists(inputDir.filePath(f"{fileName[:-8]}Night.MM2Theme"))):
-					with open(inputDir.filePath(f"{fileName[:-8]}Night.MM2Theme"), "rb") as nightFile:
-						theme_night = SM3DW_Theme.from_json_dict(json.load(nightFile))
-			elif (fileName.upper().endswith(".MYWORLD.MM2THEME")):
-				theme = MyWorld_Theme.from_json_dict(json.load(jsonFile))
-				if (os.path.exists(inputDir.filePath(f"{fileName[:-8]}Night.MM2Theme"))):
-					with open(inputDir.filePath(f"{fileName[:-8]}Night.MM2Theme"), "rb") as nightFile:
-						theme_night = MyWorld_Theme.from_json_dict(json.load(nightFile))
-			else:
-				QMessageBox.warning(window, "Invalid File", f"Encountered file {fileName} with invalid Gamestyle, skipping")
-				continue
+		if not fileName.upper().endswith(".BYML"): continue
+		with open(inputDir.filePath(f"{fileName}"), "rb") as bymlFile:
+			for theme_dict in oead.byml.from_binary(bymlFile.read()):
+				theme: Theme = None
+				if   (   GameStyle.SMB1.value[1] in fileName): theme =    SMB1_Theme.from_byml_dict(theme_dict)
+				elif (   GameStyle.SMB3.value[1] in fileName): theme =    SMB3_Theme.from_byml_dict(theme_dict)
+				elif (    GameStyle.SMW.value[1] in fileName): theme =     SMW_Theme.from_byml_dict(theme_dict)
+				elif (  GameStyle.NSMBU.value[1] in fileName): theme =   NSMBU_Theme.from_byml_dict(theme_dict)
+				elif (  GameStyle.SM3DW.value[1] in fileName): theme =   SM3DW_Theme.from_byml_dict(theme_dict)
+				elif (GameStyle.MyWorld.value[1] in fileName): theme = MyWorld_Theme.from_byml_dict(theme_dict)
+				else:
+					QMessageBox.warning(window, "Invalid File", f"Encountered file {fileName} with invalid Gamestyle, skipping")
+					break
+				
+				listItem = QListWidgetItem()
+				if (theme.Is_Night):
+					listItem.setText(f"{theme.Theme_Name} (Night)")
+				else:
+					listItem.setText(theme.Theme_Name)
+				# TODO: THIS FUCKING BLOWS HOLY SHIT ITS SO UGLY
+				listItem.setData(100, (theme, None)) # No idea if this is how you're supposed to do it, but its working so.
+				window.themeLists[theme.Style].addItem(listItem)
 
-			listItem = QListWidgetItem()
-			if (theme_night):
-				listItem.setText(f"{theme.Theme_Name} + Night")
-			else:
-				listItem.setText(theme.Theme_Name)
-			listItem.setData(100, (theme, theme_night)) # No idea if this is how you're supposed to do it, but its working so.
-			# TODO: THIS FUCKING BLOWS HOLY SHIT ITS SO UGLY
-			window.themeLists[theme.Style].addItem(listItem)
+def ThemesCompile(window):
+	QDir.current().mkpath("Output/BYML")
+	outputDir: QDir = QDir().current()
+	outputDir.cd("Output/BYML")
+	
+	for style in GameStyle:
+		byml_array = []
+		for i in range(window.themeLists[style].count()): # This feels super janky but it works !
+			themes = window.themeLists[style].item(i).data(100)
+			for theme in themes: # TODO: THIS FUCKING BLOWS HOLY SHIT ITS SO UGLY
+				if not theme: continue
+				byml_array.append(theme.as_byml_dict())
+		
+		with open(outputDir.filePath(f"{style.value[1]}.yaml"), "wt") as file:
+			file.write(oead.byml.to_text(byml_array)) # Write yaml for sanity checking
+		with open(outputDir.filePath(f"{style.value[1]}.byml"), "wb") as file:
+			file.write(oead.byml.to_binary(byml_array, False, 1))
+
+def RomFSDecompile(window):
+	workingDir: QDir = QDir(CLEANROMFSDIR.path())
+	if not workingDir.cd("Model"): raise FileNotFoundError()
+	if not workingDir.exists("M1_DV_plain.Nin_NX_NVN.zs"): raise FileNotFoundError()
+	with open(workingDir.filePath("M1_DV_plain.Nin_NX_NVN.zs"), "rb") as zsSarcFile:
+		for file in oead.Sarc(ZSTD_uncompress(zsSarcFile.read())).get_files():
+			print(file.name+": "+str(file.data))
+			print(type(file.data))
 
 class MainWindow(QMainWindow):
+	# TODO: These could be lambdas
 	def placeholder_button_clicked(self):
 		pass
-	def theme_decompile_button_clicked(self):
-		response = QMessageBox.question(self, "Are you sure?", "Are you sure you want to decompile .byml files to .MM2Theme?")
-		if response == QMessageBox.StandardButton.Yes:
-			DecompileThemes(self)
-			QMessageBox.information(self, "Success", "Finished Successfully")
 	def theme_load_button_clicked(self):
 		response = QMessageBox.question(self, "Are you sure?", "Are you sure you want to load all .MM2Theme files?")
 		if response == QMessageBox.StandardButton.Yes:
-			LoadThemes(self)
+			ThemesLoad(self)
+			QMessageBox.information(self, "Success", "Finished Successfully")
+	def theme_save_button_clicked(self):
+		response = QMessageBox.question(self, "Are you sure?", "Are you sure you want to save all loaded themes to .MM2Theme files?")
+		if response == QMessageBox.StandardButton.Yes:
+			ThemesSave(self)
+			QMessageBox.information(self, "Success", "Finished Successfully")
+	def theme_decompile_button_clicked(self):
+		response = QMessageBox.question(self, "Are you sure?", "Are you sure you want to decompile and load all .BYML files?")
+		if response == QMessageBox.StandardButton.Yes:
+			ThemesDecompile(self)
 			QMessageBox.information(self, "Success", "Finished Successfully")
 	def theme_compile_button_clicked(self):
-		response = QMessageBox.question(self, "Are you sure?", "Are you sure you want to compile loaded themes to .byml?")
+		response = QMessageBox.question(self, "Are you sure?", "Are you sure you want to compile all loaded themes to .BYML files?")
 		if response == QMessageBox.StandardButton.Yes:
-			CompileThemes(self)
+			ThemesCompile(self)
 			QMessageBox.information(self, "Success", "Finished Successfully")
-	def margin_remove_button_clicked(self):
-		QMessageBox.warning(self, "Unimplemented", "This feature is currently unimplemented.")
-		# response = QMessageBox.question(self, "Are you sure?", "Are you sure you want to remove tileset margins?")
-		# if response == QMessageBox.StandardButton.Yes:
-		# 	RemoveMargins()
-		#	QMessageBox.information(self, "Success", "Finished Successfully")
-	def margin_add_button_clicked(self):
-		QMessageBox.warning(self, "Unimplemented", "This feature is currently unimplemented.")
-		# response = QMessageBox.question(self, "Are you sure?", "Are you sure you want to add tileset margins?")
-		# if response == QMessageBox.StandardButton.Yes:
-		# 	AddMargins()
-		#	QMessageBox.information(self, "Success", "Finished Successfully")
-	def romfs_button_clicked(self):
+	def romfs_select_button_clicked(self):
 		global CLEANROMFSDIR
 		CLEANROMFSDIR = QDir(QFileDialog.getExistingDirectory(
 			self,
-			"Select romfs directory",
+			"Select RomFS directory",
 			CLEANROMFSDIR.path(),
 			QFileDialog.Option.ShowDirsOnly
 		))
-		self.romfsDirLabel.setText("<b>romfs dir:</b> <i>\""+CLEANROMFSDIR.path()+"\"</i>")
+		self.romFSDirLabel.setText("<b>RomFS dir:</b> <i>\""+CLEANROMFSDIR.path()+"\"</i>")
+	def romfs_decompile_button_clicked(self):
+		response = QMessageBox.question(self, "This is Work-in-progress.", "Are you sure you meant to click this button?")
+		if response == QMessageBox.StandardButton.Yes:
+			RomFSDecompile(self)
+			QMessageBox.information(self, "Success", "Finished Successfully")
 
 	def __init__(self):
 		super().__init__()
-
+		self.setWindowIcon(QIcon("Assets/SMM2DX.png"))
 		self.setWindowTitle("MM2MT - Mario Maker 2 Mod Tools")
 		self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
 		self.customContextMenuRequested.connect(self.context_menu)
 		self.setStatusBar(QStatusBar(self))
+
+		# region Actions
+		placeholder_1_button_action = QAction(QIcon("Assets/fugue-icons/icons/cross-circle.png"), "&Placeholder", self)
+		placeholder_1_button_action.setStatusTip("This does nothing")
+		placeholder_1_button_action.triggered.connect(self.placeholder_button_clicked)
+		#placeholder_1_button_action.setShortcut(QKeySequence.StandardKey.Print)
+		placeholder_2_button_action = QAction(QIcon("Assets/fugue-icons/icons/cross-circle.png"), "&Placeholder", self)
+		placeholder_2_button_action.setStatusTip("This does nothing")
+		placeholder_2_button_action.triggered.connect(self.placeholder_button_clicked)
+		placeholder_3_button_action = QAction(QIcon("Assets/fugue-icons/icons/cross-circle.png"), "&Placeholder", self)
+		placeholder_3_button_action.setStatusTip("This does nothing")
+		placeholder_3_button_action.triggered.connect(self.placeholder_button_clicked)
+
+		theme_load_button_action = QAction(QIcon("Assets/fugue-icons/icons/document--plus.png"), "Load MM2Themes", self)
+		theme_load_button_action.setStatusTip("Load MM2Theme files")
+		theme_load_button_action.triggered.connect(self.theme_load_button_clicked)
+
+		theme_save_button_action = QAction(QIcon("Assets/fugue-icons/icons/disk.png"), "Save MM2Themes", self)
+		theme_save_button_action.setStatusTip("Save MM2Theme files")
+		theme_save_button_action.triggered.connect(self.theme_save_button_clicked)
+
+		theme_decompile_button_action = QAction(QIcon("Assets/fugue-icons/icons/document-import.png"), "Decompile BYMLs", self)
+		theme_decompile_button_action.setStatusTip("Decompile and load BYML files")
+		theme_decompile_button_action.triggered.connect(self.theme_decompile_button_clicked)
+
+		theme_compile_button_action = QAction(QIcon("Assets/fugue-icons/icons/document-export.png"), "Compile BYML/YAMLs", self)
+		theme_compile_button_action.setStatusTip("Compile loaded themes to BYML/YAML files")
+		theme_compile_button_action.triggered.connect(self.theme_compile_button_clicked)
+
+		romfs_select_button_action = QAction(QIcon("Assets/fugue-icons/icons/folder-open.png"), "Select RomFS dir", self)
+		romfs_select_button_action.setStatusTip("Select a clean, exported MM2 RomFS folder")
+		romfs_select_button_action.triggered.connect(self.romfs_select_button_clicked)
+
+		romfs_decompile_button_action = QAction(QIcon("Assets/fugue-icons/icons/folder-import.png"), "\"Decompile\" RomFS", self)
+		romfs_decompile_button_action.setStatusTip("\"Decompile\" your RomFS to human-readable formats")
+		romfs_decompile_button_action.triggered.connect(self.romfs_decompile_button_clicked)
+		# endregion
 
 		mainWidget = QWidget()
 		mainLayout = QHBoxLayout()
@@ -178,89 +216,16 @@ class MainWindow(QMainWindow):
 		mainLayout.setSpacing(0) # Spacing and stuff for visuals
 		mainWidget.setLayout(mainLayout)
 		self.setCentralWidget(mainWidget)
+		self.romFSDirLabel = QLabel()
+		self.romFSDirLabel.setText("<b>RomFS dir:</b> <i>\""+CLEANROMFSDIR.path()+"\"</i>")
 		if True:
-			tabsWidget = QTabWidget()
-			tabsWidget.setTabPosition(QTabWidget.TabPosition.West)
-			tabsWidget.setDocumentMode(True)
-			tabsWidget.setMovable(True)
-			mainLayout.addWidget(tabsWidget)
-			if True:
-				tab = QWidget()
-				tabLayout = QVBoxLayout()
-				tabLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-				tabLabel = QLabel()
-				tabLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-				tabLabel.setText("Theme Decompiler")
-				tabLayout.addWidget(tabLabel)
-				tabButton = QPushButton()
-				tabButton.setText("Run")
-				tabButton.setStatusTip("Run Theme Decompiler")
-				tabButton.clicked.connect(self.theme_decompile_button_clicked)
-				tabLayout.addWidget(tabButton)
-				tab.setLayout(tabLayout)
-				tabsWidget.addTab(tab, "Decompile Themes")
-			if True:
-				tab = QWidget()
-				tabLayout = QVBoxLayout()
-				tabLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-				tabLabel = QLabel()
-				tabLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-				tabLabel.setText("Theme Loader")
-				tabLayout.addWidget(tabLabel)
-				tabButton = QPushButton()
-				tabButton.setText("Run")
-				tabButton.setStatusTip("Run Theme Loader")
-				tabButton.clicked.connect(self.theme_load_button_clicked)
-				tabLayout.addWidget(tabButton)
-				tab.setLayout(tabLayout)
-				tabsWidget.addTab(tab, "Load Themes")
-			if True:
-				tab = QWidget()
-				tabLayout = QVBoxLayout()
-				tabLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-				tabLabel = QLabel()
-				tabLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-				tabLabel.setText("Theme Compiler")
-				tabLayout.addWidget(tabLabel)
-				tabButton = QPushButton()
-				tabButton.setText("Run")
-				tabButton.setStatusTip("Run Theme Compiler")
-				tabButton.clicked.connect(self.theme_compile_button_clicked)
-				tabLayout.addWidget(tabButton)
-				tab.setLayout(tabLayout)
-				tabsWidget.addTab(tab, "Compile Themes")
-			if True:
-				tab = QWidget()
-				tabLayout = QVBoxLayout()
-				tabLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-				tabLabel = QLabel()
-				tabLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-				tabLabel.setText("NSMBU Margin Tool\n(UNIMPLEMENTED)")
-				tabLayout.addWidget(tabLabel)
-				if True:
-					buttonsWidget = QWidget()
-					buttonsLayout = QHBoxLayout()
-					buttonsLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-					tabButton1 = QPushButton()
-					tabButton1.setText("Remove")
-					tabButton1.setStatusTip("Remove Tileset Margins")
-					tabButton1.clicked.connect(self.margin_remove_button_clicked)
-					buttonsLayout.addWidget(tabButton1)
-					tabButton2 = QPushButton()
-					tabButton2.setText("Add")
-					tabButton2.setStatusTip("Add Tileset Margins")
-					tabButton2.clicked.connect(self.margin_add_button_clicked)
-					buttonsLayout.addWidget(tabButton2)
-					buttonsWidget.setLayout(buttonsLayout)
-					tabLayout.addWidget(buttonsWidget)
-				tab.setLayout(tabLayout)
-				tabsWidget.addTab(tab, "Margin Tool")
-		if True:
-			area1 = QWidget()
-			area1Layout = QVBoxLayout()
+			area = QWidget()
+			areaLayout = QVBoxLayout()
+			area.setLayout(areaLayout)
+			mainLayout.addWidget(area)
 			if True:
 				tabsWidget = QTabWidget()
-				tabsWidget.setTabPosition(QTabWidget.TabPosition.East)
+				tabsWidget.setTabPosition(QTabWidget.TabPosition.West)
 				tabsWidget.setDocumentMode(True)
 				tabsWidget.setMovable(True)
 				self.themeLists: dict[GameStyle, QListWidget] = {} # TODO: This probably needs to be far more hardcoded and use a subclassed QListWidgetItem class
@@ -270,12 +235,51 @@ class MainWindow(QMainWindow):
 					self.themeLists[style].setFlow(QListView.Flow.TopToBottom)
 					self.themeLists[style].setMovement(QListView.Movement.Snap)
 					tabsWidget.addTab(self.themeLists[style], f"{style.name}")
-				area1Layout.addWidget(tabsWidget)
+				areaLayout.addWidget(tabsWidget)
 			if True:
-				Widget = QWidget()
-				area1Layout.addWidget(Widget)
-			area1.setLayout(area1Layout)
-			mainLayout.addWidget(area1)
+				buttonSection = QWidget()
+				buttonSectionLayout = QHBoxLayout()
+				buttonSectionLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+				buttonSection.setLayout(buttonSectionLayout)
+				areaLayout.addWidget(buttonSection)
+				if True:
+					button = QActionButton(theme_load_button_action)
+					buttonSectionLayout.addWidget(button)
+				if True:
+					button = QActionButton(theme_save_button_action)
+					buttonSectionLayout.addWidget(button)
+				if True:
+					button = QActionButton(theme_decompile_button_action)
+					buttonSectionLayout.addWidget(button)
+				if True:
+					button = QActionButton(theme_compile_button_action)
+					buttonSectionLayout.addWidget(button)
+		if True:
+			area = QWidget()
+			areaLayout = QVBoxLayout()
+			areaLayout.setAlignment(Qt.AlignmentFlag.AlignBottom)
+			area.setLayout(areaLayout)
+			mainLayout.addWidget(area)
+			if True:
+				buttonSection = QWidget()
+				buttonSectionLayout = QHBoxLayout()
+				buttonSectionLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+				buttonSection.setLayout(buttonSectionLayout)
+				areaLayout.addWidget(buttonSection)
+				if True:
+					button = QActionButton(romfs_select_button_action)
+					buttonSectionLayout.addWidget(button)
+				if True:
+					button = QActionButton(romfs_decompile_button_action)
+					buttonSectionLayout.addWidget(button)
+			if True:
+				labelSection = QWidget()
+				labelSectionLayout = QHBoxLayout()
+				labelSectionLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+				labelSection.setLayout(labelSectionLayout)
+				areaLayout.addWidget(labelSection)
+				if True:
+					labelSectionLayout.addWidget(self.romFSDirLabel)
 
 		toolbar = QToolBar("Toolbar")
 		toolbar.setMovable(False)
@@ -284,37 +288,28 @@ class MainWindow(QMainWindow):
 		self.addToolBar(toolbar)
 		menu = self.menuBar()
 		if True:
-			# Actions
-			romfs_button_action = QAction(QIcon("Assets/fugue-icons/icons/folder-open.png"), "Select romfs dir", self)
-			romfs_button_action.setStatusTip("Select a clean, exported MM2 romfs folder")
-			romfs_button_action.triggered.connect(self.romfs_button_clicked)
-
-			placeholder_button_action = QAction(QIcon("Assets/fugue-icons/icons/cross-circle.png"), "&Placeholder", self)
-			placeholder_button_action.setStatusTip("This does nothing")
-			placeholder_button_action.triggered.connect(self.placeholder_button_clicked)
-			#placeholder_button_action.setShortcut(QKeySequence.StandardKey.Print)
-
 			# Toolbar
-			self.romfsDirLabel = QLabel()
-			self.romfsDirLabel.setText("<b>romfs dir:</b> <i>\""+CLEANROMFSDIR.path()+"\"</i>")
-			toolbar.addWidget(self.romfsDirLabel)
-			toolbar.addAction(romfs_button_action)
-			#toolbar.addSeparator()
+			toolbar.addAction(placeholder_1_button_action)
+			toolbar.addAction(placeholder_2_button_action)
+			toolbar.addSeparator()
+			toolbar.addAction(placeholder_3_button_action)
 			
 			# Menu Bar
 			file_menu = menu.addMenu("&File")
-			file_menu.addAction(placeholder_button_action)
-			#file_menu.addSeparator()
+			file_menu.addAction(placeholder_1_button_action)
+			file_menu.addAction(placeholder_2_button_action)
+			file_menu.addSeparator()
+			file_menu.addAction(placeholder_3_button_action)
 			#file_submenu = file_menu.addMenu("&Submenu")
 
 			settings_menu = menu.addMenu("&Settings")
-			settings_menu.addAction(romfs_button_action)
+			settings_menu.addAction(romfs_select_button_action)
 		
 		oldGeometry: QByteArray = settings.value("MainWindow/geometry")
 		if oldGeometry: self.restoreGeometry(oldGeometry)
 	def closeEvent(self, event):
 		settings.setValue("MainWindow/geometry", self.saveGeometry())
-		settings.setValue("romfsDir", CLEANROMFSDIR.path())
+		settings.setValue("RomFSDir", CLEANROMFSDIR.path())
 	def context_menu(self, pos):
 		context = QMenu(self)
 		context.addAction(QAction("No Right-Click Actions available", self))

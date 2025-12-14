@@ -3,12 +3,12 @@ from enum import Enum
 
 # Enums
 class GameStyle(Enum):
-	SMB1	= 'M1', 'M1_SceneDB'
-	SMB3	= 'M3', 'M3_SceneDB'
-	SMW		= 'MW', 'MW_SceneDB'
-	NSMBU	= 'WU', 'WU_SceneDB'
-	SM3DW	= '3W', '3W_SceneDB'
-	MyWorld	= 'MyWorld', 'SceneDB_MyWorld'
+	SMB1	=	'M1',		'M1_SceneDB'
+	SMB3	=	'M3',		'M3_SceneDB'
+	SMW		=	'MW',		'MW_SceneDB'
+	NSMBU	=	'WU',		'WU_SceneDB'
+	SM3DW	=	'3W',		'3W_SceneDB'
+	MyWorld	=	'MyWorld',	'SceneDB_MyWorld'
 
 class Vertical_Background_Anchor_Enum(Enum):
 	Top		= '上基準'
@@ -65,6 +65,7 @@ class SMB1_Theme(Theme):
 	def from_json_dict(json: dict) -> Theme:
 		self = SMB1_Theme()
 		self.Theme_Name = json["Theme_Name"]
+		self.Is_Night = json["Is_Night"]
 		self.CustomScroll_Inside = [
 			float(json["CustomScroll_Inside"][0]).__round__(5),
 			float(json["CustomScroll_Inside"][1]).__round__(5),
@@ -142,6 +143,7 @@ class SMB1_Theme(Theme):
 	def as_json_dict(self) -> dict:
 		return {
 			"Theme_Name": self.Theme_Name,
+			"Is_Night": self.Is_Night,
 			"CustomScroll_Inside": self.CustomScroll_Inside,
 			"CustomScroll_Outside": self.CustomScroll_Outside,
 			"Background_Model": self.Background_Model,
@@ -220,6 +222,7 @@ class SMB3_Theme(Theme):
 	def from_json_dict(json: dict) -> Theme:
 		self = SMB3_Theme()
 		self.Theme_Name = json["Theme_Name"]
+		self.Is_Night = json["Is_Night"]
 		self.CustomScroll_Inside = [
 			float(json["CustomScroll_Inside"][0]).__round__(5),
 			float(json["CustomScroll_Inside"][1]).__round__(5),
@@ -297,6 +300,7 @@ class SMB3_Theme(Theme):
 	def as_json_dict(self) -> dict:
 		return {
 			"Theme_Name": self.Theme_Name,
+			"Is_Night": self.Is_Night,
 			"CustomScroll_Inside": self.CustomScroll_Inside,
 			"CustomScroll_Outside": self.CustomScroll_Outside,
 			"Background_Model": self.Background_Model,
@@ -375,6 +379,7 @@ class SMW_Theme(Theme):
 	def from_json_dict(json: dict) -> Theme:
 		self = SMW_Theme()
 		self.Theme_Name = json["Theme_Name"]
+		self.Is_Night = json["Is_Night"]
 		self.CustomScroll_Inside = [
 			float(json["CustomScroll_Inside"][0]).__round__(5),
 			float(json["CustomScroll_Inside"][1]).__round__(5),
@@ -452,6 +457,7 @@ class SMW_Theme(Theme):
 	def as_json_dict(self) -> dict:
 		return {
 			"Theme_Name": self.Theme_Name,
+			"Is_Night": self.Is_Night,
 			"CustomScroll_Inside": self.CustomScroll_Inside,
 			"CustomScroll_Outside": self.CustomScroll_Outside,
 			"Background_Model": self.Background_Model,
@@ -546,6 +552,7 @@ class NSMBU_Theme(Theme):
 	def from_json_dict(json: dict) -> Theme:
 		self = NSMBU_Theme()
 		self.Theme_Name = json["Theme_Name"]
+		self.Is_Night = json["Is_Night"]
 		self.CustomScroll_Inside = [
 			float(json["CustomScroll_Inside"][0]).__round__(5),
 			float(json["CustomScroll_Inside"][1]).__round__(5),
@@ -649,6 +656,7 @@ class NSMBU_Theme(Theme):
 	def as_json_dict(self) -> dict:
 		return {
 			"Theme_Name": self.Theme_Name,
+			"Is_Night": self.Is_Night,
 			"CustomScroll_Inside": self.CustomScroll_Inside,
 			"CustomScroll_Outside": self.CustomScroll_Outside,
 			"Background_Model": self.Background_Model,
@@ -754,6 +762,7 @@ class SM3DW_Theme(Theme):
 	def from_json_dict(json: dict) -> Theme:
 		self = SM3DW_Theme()
 		self.Theme_Name = json["Theme_Name"]
+		self.Is_Night = json["Is_Night"]
 		self.CustomScroll_Inside = [
 			float(json["CustomScroll_Inside"][0]).__round__(5),
 			float(json["CustomScroll_Inside"][1]).__round__(5),
@@ -831,6 +840,7 @@ class SM3DW_Theme(Theme):
 	def as_json_dict(self) -> dict:
 		return {
 			"Theme_Name": self.Theme_Name,
+			"Is_Night": self.Is_Night,
 			"CustomScroll_Inside": self.CustomScroll_Inside,
 			"CustomScroll_Outside": self.CustomScroll_Outside,
 			"Background_Model": self.Background_Model,
@@ -902,6 +912,7 @@ class MyWorld_Theme(Theme):
 	def from_json_dict(json: dict) -> Theme:
 		self = MyWorld_Theme()
 		self.Theme_Name = json["Theme_Name"]
+		self.Is_Night = False
 		self.Background_Model = json["Background_Model"]
 		self.Tileset_Model = json["Tileset_Model"]
 		self.Editor_Grid = [
@@ -923,6 +934,7 @@ class MyWorld_Theme(Theme):
 	def from_byml_dict(byml: dict) -> Theme:
 		self = MyWorld_Theme()
 		self.Theme_Name = byml["FieldModel"][14:]
+		self.Is_Night = False
 		self.Background_Model = byml["DVModel"]
 		self.Tileset_Model = byml["FieldModel"]
 		self.Editor_Grid = [
