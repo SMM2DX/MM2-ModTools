@@ -68,7 +68,7 @@ class RelocationTable():
          print("	Magic:				"+self.Magic)
          print("	Offset From Header:		"+hex(self.OffsetFromHeader))
          print("	Section Count:			"+hex(self.SectionCount))
-         print("	Blocks:")
+         print("	Sections:")
          for x in self.Sections: x.debugPrint()
 
 class BinaryBlock():
