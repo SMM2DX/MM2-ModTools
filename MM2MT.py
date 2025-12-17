@@ -3,8 +3,8 @@ import sys
 import json
 import oead
 from zstd import ZSTD_uncompress
+from Modules.NintendoThings.BFRES import BinaryFileResource
 from Modules.MM2Things import Theme, GameStyle, SMB1_Theme, SMB3_Theme, SMW_Theme, NSMBU_Theme, SM3DW_Theme, MyWorld_Theme
-from Modules.NintendoThings import BinaryFileResource
 from Modules.QtThings import QActionButton
 from PyQt6.QtCore import Qt, QDir, QSettings, QByteArray, QSize
 from PyQt6.QtGui import QAction, QIcon, QKeySequence, QPixmap
@@ -126,22 +126,12 @@ def RomFSDecompile(window):
 		sarcFile = oead.Sarc(ZSTD_uncompress(zsFile.read()))
 		for file in sarcFile.get_files():
 			if file.name.upper().endswith(".BFRES"): 
-				#with open("/home/hannah13/Downloads/temp0", "wb") as tempFile:
-				#	tempFile.write(bytes(file.data))
 				bfresFile = BinaryFileResource(bytes(file.data))
-				bfresFile.debugPrint()
-	with open("/home/hannah13/Documents/Animal_Bass.Tex1.sbfres", "rb") as yaz0File:
-		#temp = bytes(oead.yaz0.decompress(yaz0File.read()))
-		#with open("/home/hannah13/Downloads/temp1", "wb") as tempFile:
-		#	tempFile.write(temp)
-		bfresFile = BinaryFileResource(bytes(oead.yaz0.decompress(yaz0File.read())))
-		#bfresFile.debugPrint()
-	with open("/home/hannah13/Documents/Animal_Bass.Tex.sbfres", "rb") as yaz0File:
-		#temp = bytes(oead.yaz0.decompress(yaz0File.read()))
-		#with open("/home/hannah13/Downloads/temp2", "wb") as tempFile:
-		#	tempFile.write(temp)
-		bfresFile = BinaryFileResource(bytes(oead.yaz0.decompress(yaz0File.read())))
-		bfresFile.debugPrint()
+				bfresFile.print()
+	print("")
+	with open("/home/hannah13/Documents/Animal_Bass.Tex.bfres", "rb") as file:
+		bfresFile = BinaryFileResource(file.read())
+		bfresFile.print()
 
 class MainWindow(QMainWindow):
 	# TODO: These could be lambdas
