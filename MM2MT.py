@@ -261,12 +261,6 @@ class MainWindow(QMainWindow):
 				if True:
 					button = QActionButton(theme_compile_button_action)
 					buttonSectionLayout.addWidget(button)
-		if True:
-			area = QWidget()
-			areaLayout = QVBoxLayout()
-			areaLayout.setAlignment(Qt.AlignmentFlag.AlignBottom)
-			area.setLayout(areaLayout)
-			mainLayout.addWidget(area)
 			if True:
 				buttonSection = QWidget()
 				buttonSectionLayout = QHBoxLayout()
@@ -287,6 +281,13 @@ class MainWindow(QMainWindow):
 				areaLayout.addWidget(labelSection)
 				if True:
 					labelSectionLayout.addWidget(self.romFSDirLabel)
+		if True:
+			area = QWidget()
+			areaLayout = QVBoxLayout()
+			area.setLayout(areaLayout)
+			mainLayout.addWidget(area)
+			# TODO: Theme stuff goes here. like settings
+			#       Add liquid option with a note about MM2DX
 
 		toolbar = QToolBar("Toolbar")
 		toolbar.setMovable(False)
