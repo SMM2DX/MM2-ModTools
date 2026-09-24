@@ -1,0 +1,5 @@
+Goal: BCML/UKMM-style mod-loader for MM2
+
+Current Planned Features:
+	ThemeDB Editing
+	Decompile and recompile MM2 files to/from basic traversable file path (e.g. PNG and YAML)

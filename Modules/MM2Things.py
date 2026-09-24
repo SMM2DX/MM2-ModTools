@@ -14,6 +14,21 @@ class Vertical_Background_Anchor_Enum(Enum):
 	Top		= '上基準'
 	Bottom	= '下基準'
 
+class romfs_Model_File(str):
+	pass
+class romfs_Pack_FieldAnime(str):
+	pass
+class Background_Lighting_Type(str): # Placeholder
+	pass
+class Foreground_Lighting_Type(str): # Placeholder
+	pass
+class Enemy_Variant_Type(str): # Placeholder
+	pass
+class Rectangle(list[float]): #?
+	pass
+class Colour(list[float]):
+	pass
+
 # Theme Classes
 class Theme():
 	Style: GameStyle
@@ -51,7 +66,7 @@ class SMB1_Theme(Theme):
 			"> CustomScroll_Inside:			"+str(self.CustomScroll_Inside)+"\n"+
 			"> CustomScroll_Outside:			"+str(self.CustomScroll_Outside)+"\n"+
 			"> Background_Model:			"+str(self.Background_Model)+"\n"+
-			"> Vertical_Background_Anchor_Type:	"+str(self.Vertical_Background_Anchor_Type)+"\n"+
+			"> Vertical_Background_Anchor_Type:	"+str(self.Vertical_Background_Anchor_Type.name)+"\n"+
 			"> Enemy_Variant:			"+str(self.Enemy_Variant)+"\n"+
 			"> Background_Lighting:			"+str(self.Background_Lighting)+"\n"+
 			"> Vertical_Background_Lighting:		"+str(self.Vertical_Background_Lighting)+"\n"+
@@ -187,6 +202,22 @@ class SMB1_Theme(Theme):
 			"Shadow_Offset": oead.F32(self.Shadow_Offset),
 		}
 
+class SMB1_Theme_2(Theme):
+	Style = GameStyle.SMB1
+	CustomScroll_Inside: Rectangle #?
+	CustomScroll_Outside: Rectangle #?
+	Background_Model: romfs_Model_File
+	Vertical_Background_Anchor_Type: Vertical_Background_Anchor_Enum
+	Enemy_Variant: Enemy_Variant_Type
+	Background_Lighting: Background_Lighting_Type
+	Vertical_Background_Lighting: Background_Lighting_Type
+	Lighting: Foreground_Lighting_Type
+	Tileset_Model_Animation_Type: romfs_Pack_FieldAnime
+	Tileset_Model: romfs_Model_File
+	Editor_Grid: Colour
+	Shadow_Color: Colour
+	Shadow_Offset: float
+
 class SMB3_Theme(Theme):
 	Style = GameStyle.SMB3
 	CustomScroll_Inside: list[float] # Vec4
@@ -208,7 +239,7 @@ class SMB3_Theme(Theme):
 			"> CustomScroll_Inside:			"+str(self.CustomScroll_Inside)+"\n"+
 			"> CustomScroll_Outside:			"+str(self.CustomScroll_Outside)+"\n"+
 			"> Background_Model:			"+str(self.Background_Model)+"\n"+
-			"> Vertical_Background_Anchor_Type:	"+str(self.Vertical_Background_Anchor_Type)+"\n"+
+			"> Vertical_Background_Anchor_Type:	"+str(self.Vertical_Background_Anchor_Type.name)+"\n"+
 			"> Enemy_Variant:			"+str(self.Enemy_Variant)+"\n"+
 			"> Background_Lighting:			"+str(self.Background_Lighting)+"\n"+
 			"> Vertical_Background_Lighting:		"+str(self.Vertical_Background_Lighting)+"\n"+
@@ -365,7 +396,7 @@ class SMW_Theme(Theme):
 			"> CustomScroll_Inside:			"+str(self.CustomScroll_Inside)+"\n"+
 			"> CustomScroll_Outside:			"+str(self.CustomScroll_Outside)+"\n"+
 			"> Background_Model:			"+str(self.Background_Model)+"\n"+
-			"> Vertical_Background_Anchor_Type:	"+str(self.Vertical_Background_Anchor_Type)+"\n"+
+			"> Vertical_Background_Anchor_Type:	"+str(self.Vertical_Background_Anchor_Type.name)+"\n"+
 			"> Enemy_Variant:			"+str(self.Enemy_Variant)+"\n"+
 			"> Background_Lighting:			"+str(self.Background_Lighting)+"\n"+
 			"> Vertical_Background_Lighting:		"+str(self.Vertical_Background_Lighting)+"\n"+
@@ -535,7 +566,7 @@ class NSMBU_Theme(Theme):
 			"> WIP_DV_ProjMoveY:			"+str(self.WIP_DV_ProjMoveY)+"\n"+
 			"> WIP_DV_ProjOffsetY:			"+str(self.WIP_DV_ProjOffsetY)+"\n"+
 			"> WIP_DV_V_CamMoveY:			"+str(self.WIP_DV_V_CamMoveY)+"\n"+
-			"> Vertical_Background_Anchor_Type:	"+str(self.Vertical_Background_Anchor_Type)+"\n"+
+			"> Vertical_Background_Anchor_Type:	"+str(self.Vertical_Background_Anchor_Type.name)+"\n"+
 			"> WIP_DV_V_ProjMoveY:			"+str(self.WIP_DV_V_ProjMoveY)+"\n"+
 			"> WIP_DV_V_ProjOffsetY:			"+str(self.WIP_DV_V_ProjOffsetY)+"\n"+
 			"> Vertical_Background_Position:		"+str(self.Vertical_Background_Position)+"\n"+
@@ -750,7 +781,7 @@ class SM3DW_Theme(Theme):
 			"> WIP_DV_ProjOffsetY:			"+str(self.WIP_DV_ProjOffsetY)+"\n"+
 			"> WIP_DV_ScalePivot:			"+str(self.WIP_DV_ScalePivot)+"\n"+
 			"> WIP_DV_V_CamMoveY:			"+str(self.WIP_DV_V_CamMoveY)+"\n"+
-			"> Vertical_Background_Anchor_Type:	"+str(self.Vertical_Background_Anchor_Type)+"\n"+
+			"> Vertical_Background_Anchor_Type:	"+str(self.Vertical_Background_Anchor_Type.name)+"\n"+
 			"> WIP_DV_V_ProjMoveY:			"+str(self.WIP_DV_V_ProjMoveY)+"\n"+
 			"> WIP_DV_V_ProjOffsetY:			"+str(self.WIP_DV_V_ProjOffsetY)+"\n"+
 			"> Background_Lighting:			"+str(self.Background_Lighting)+"\n"+
