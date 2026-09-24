@@ -174,7 +174,7 @@ class MainWindow(QMainWindow):
 
 	def __init__(self):
 		super().__init__()
-		self.setWindowIcon(QIcon("Assets/SMM2DX.png"))
+		self.setWindowIcon(QIcon("Assets/Icon.png"))
 		self.setWindowTitle("MM2MT - Mario Maker 2 Mod Tools")
 		self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
 		self.customContextMenuRequested.connect(self.context_menu)
